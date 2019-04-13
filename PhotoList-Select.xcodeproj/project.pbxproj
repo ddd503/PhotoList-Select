@@ -8,12 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		45FAFB09226180F30034E913 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FAFB08226180F30034E913 /* AppDelegate.swift */; };
-		45FAFB0B226180F30034E913 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FAFB0A226180F30034E913 /* ViewController.swift */; };
-		45FAFB0E226180F30034E913 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45FAFB0C226180F30034E913 /* Main.storyboard */; };
 		45FAFB11226180F30034E913 /* PhotoList_Select.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 45FAFB0F226180F30034E913 /* PhotoList_Select.xcdatamodeld */; };
 		45FAFB13226180F40034E913 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 45FAFB12226180F40034E913 /* Assets.xcassets */; };
 		45FAFB16226180F40034E913 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45FAFB14226180F40034E913 /* LaunchScreen.storyboard */; };
 		45FAFB21226180F40034E913 /* PhotoList_SelectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FAFB20226180F40034E913 /* PhotoList_SelectTests.swift */; };
+		45FAFB30226181F20034E913 /* PhotoListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FAFB2F226181F20034E913 /* PhotoListViewController.swift */; };
+		45FAFB32226181FA0034E913 /* PhotoListViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45FAFB31226181FA0034E913 /* PhotoListViewController.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,8 +29,6 @@
 /* Begin PBXFileReference section */
 		45FAFB05226180F30034E913 /* PhotoList-Select.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PhotoList-Select.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		45FAFB08226180F30034E913 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		45FAFB0A226180F30034E913 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		45FAFB0D226180F30034E913 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		45FAFB10226180F30034E913 /* PhotoList_Select.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = PhotoList_Select.xcdatamodel; sourceTree = "<group>"; };
 		45FAFB12226180F40034E913 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		45FAFB15226180F40034E913 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -38,6 +36,8 @@
 		45FAFB1C226180F40034E913 /* PhotoList-SelectTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "PhotoList-SelectTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		45FAFB20226180F40034E913 /* PhotoList_SelectTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoList_SelectTests.swift; sourceTree = "<group>"; };
 		45FAFB22226180F40034E913 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		45FAFB2F226181F20034E913 /* PhotoListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoListViewController.swift; sourceTree = "<group>"; };
+		45FAFB31226181FA0034E913 /* PhotoListViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = PhotoListViewController.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,12 +79,11 @@
 		45FAFB07226180F30034E913 /* PhotoList-Select */ = {
 			isa = PBXGroup;
 			children = (
-				45FAFB08226180F30034E913 /* AppDelegate.swift */,
-				45FAFB0A226180F30034E913 /* ViewController.swift */,
-				45FAFB0C226180F30034E913 /* Main.storyboard */,
+				45FAFB2E2261817A0034E913 /* Model */,
+				45FAFB2D226181780034E913 /* View */,
+				45FAFB2C226181750034E913 /* Controller */,
+				45FAFB2B226181720034E913 /* Other */,
 				45FAFB12226180F40034E913 /* Assets.xcassets */,
-				45FAFB14226180F40034E913 /* LaunchScreen.storyboard */,
-				45FAFB17226180F40034E913 /* Info.plist */,
 				45FAFB0F226180F30034E913 /* PhotoList_Select.xcdatamodeld */,
 			);
 			path = "PhotoList-Select";
@@ -97,6 +96,39 @@
 				45FAFB22226180F40034E913 /* Info.plist */,
 			);
 			path = "PhotoList-SelectTests";
+			sourceTree = "<group>";
+		};
+		45FAFB2B226181720034E913 /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				45FAFB08226180F30034E913 /* AppDelegate.swift */,
+				45FAFB14226180F40034E913 /* LaunchScreen.storyboard */,
+				45FAFB17226180F40034E913 /* Info.plist */,
+			);
+			path = Other;
+			sourceTree = "<group>";
+		};
+		45FAFB2C226181750034E913 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				45FAFB2F226181F20034E913 /* PhotoListViewController.swift */,
+				45FAFB31226181FA0034E913 /* PhotoListViewController.storyboard */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		45FAFB2D226181780034E913 /* View */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		45FAFB2E2261817A0034E913 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -182,7 +214,7 @@
 			files = (
 				45FAFB16226180F40034E913 /* LaunchScreen.storyboard in Resources */,
 				45FAFB13226180F40034E913 /* Assets.xcassets in Resources */,
-				45FAFB0E226180F30034E913 /* Main.storyboard in Resources */,
+				45FAFB32226181FA0034E913 /* PhotoListViewController.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -201,7 +233,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				45FAFB11226180F30034E913 /* PhotoList_Select.xcdatamodeld in Sources */,
-				45FAFB0B226180F30034E913 /* ViewController.swift in Sources */,
+				45FAFB30226181F20034E913 /* PhotoListViewController.swift in Sources */,
 				45FAFB09226180F30034E913 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -225,14 +257,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		45FAFB0C226180F30034E913 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				45FAFB0D226180F30034E913 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		45FAFB14226180F40034E913 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -366,7 +390,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = LVR5UQEHBD;
-				INFOPLIST_FILE = "PhotoList-Select/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/PhotoList-Select/Other/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -384,7 +408,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = LVR5UQEHBD;
-				INFOPLIST_FILE = "PhotoList-Select/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/PhotoList-Select/Other/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
