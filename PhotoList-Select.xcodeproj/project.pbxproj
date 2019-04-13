@@ -83,8 +83,6 @@
 				45FAFB2D226181780034E913 /* View */,
 				45FAFB2C226181750034E913 /* Controller */,
 				45FAFB2B226181720034E913 /* Other */,
-				45FAFB12226180F40034E913 /* Assets.xcassets */,
-				45FAFB0F226180F30034E913 /* PhotoList_Select.xcdatamodeld */,
 			);
 			path = "PhotoList-Select";
 			sourceTree = "<group>";
@@ -101,6 +99,7 @@
 		45FAFB2B226181720034E913 /* Other */ = {
 			isa = PBXGroup;
 			children = (
+				45FAFB12226180F40034E913 /* Assets.xcassets */,
 				45FAFB08226180F30034E913 /* AppDelegate.swift */,
 				45FAFB14226180F40034E913 /* LaunchScreen.storyboard */,
 				45FAFB17226180F40034E913 /* Info.plist */,
@@ -127,8 +126,25 @@
 		45FAFB2E2261817A0034E913 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				45FAFB342261826B0034E913 /* DataStore */,
+				45FAFB33226182690034E913 /* Entity */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		45FAFB33226182690034E913 /* Entity */ = {
+			isa = PBXGroup;
+			children = (
+				45FAFB0F226180F30034E913 /* PhotoList_Select.xcdatamodeld */,
+			);
+			path = Entity;
+			sourceTree = "<group>";
+		};
+		45FAFB342261826B0034E913 /* DataStore */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = DataStore;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
