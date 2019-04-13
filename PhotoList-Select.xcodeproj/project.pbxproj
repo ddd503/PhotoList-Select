@@ -19,6 +19,7 @@
 		45FAFB3A22618B190034E913 /* PhotoListViewCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FAFB3922618B190034E913 /* PhotoListViewCollectionViewLayout.swift */; };
 		45FAFB3D22618C1A0034E913 /* PhotoListViewCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FAFB3B22618C1A0034E913 /* PhotoListViewCollectionViewCell.swift */; };
 		45FAFB3E22618C1A0034E913 /* PhotoListViewCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45FAFB3C22618C1A0034E913 /* PhotoListViewCollectionViewCell.xib */; };
+		45FAFB41226190D10034E913 /* UIViewController+Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FAFB40226190D10034E913 /* UIViewController+Alert.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +49,7 @@
 		45FAFB3922618B190034E913 /* PhotoListViewCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoListViewCollectionViewLayout.swift; sourceTree = "<group>"; };
 		45FAFB3B22618C1A0034E913 /* PhotoListViewCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoListViewCollectionViewCell.swift; sourceTree = "<group>"; };
 		45FAFB3C22618C1A0034E913 /* PhotoListViewCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhotoListViewCollectionViewCell.xib; sourceTree = "<group>"; };
+		45FAFB40226190D10034E913 /* UIViewController+Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Alert.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +91,7 @@
 		45FAFB07226180F30034E913 /* PhotoList-Select */ = {
 			isa = PBXGroup;
 			children = (
+				45FAFB3F226190BD0034E913 /* Extention */,
 				45FAFB2E2261817A0034E913 /* Model */,
 				45FAFB2D226181780034E913 /* View */,
 				45FAFB2C226181750034E913 /* Controller */,
@@ -160,6 +163,14 @@
 				45FAFB3722618A290034E913 /* CoreDataStore.swift */,
 			);
 			path = DataStore;
+			sourceTree = "<group>";
+		};
+		45FAFB3F226190BD0034E913 /* Extention */ = {
+			isa = PBXGroup;
+			children = (
+				45FAFB40226190D10034E913 /* UIViewController+Alert.swift */,
+			);
+			path = Extention;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -271,6 +282,7 @@
 				45FAFB09226180F30034E913 /* AppDelegate.swift in Sources */,
 				45FAFB3A22618B190034E913 /* PhotoListViewCollectionViewLayout.swift in Sources */,
 				45FAFB3822618A290034E913 /* CoreDataStore.swift in Sources */,
+				45FAFB41226190D10034E913 /* UIViewController+Alert.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
