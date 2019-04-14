@@ -2,9 +2,10 @@
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14490.98" systemVersion="18E226" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="AssetEntity" representedClassName="AssetEntity" syncable="YES" codeGenerationType="class">
         <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="localIdentifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="isDelete" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="localIdentifier" attributeType="String" defaultValueString="&quot;&quot;" syncable="YES"/>
     </entity>
     <elements>
-        <element name="AssetEntity" positionX="-63" positionY="-18" width="128" height="75"/>
+        <element name="AssetEntity" positionX="-63" positionY="-18" width="128" height="90"/>
     </elements>
 </model>

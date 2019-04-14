@@ -23,6 +23,8 @@ final class PhotoListViewCollectionViewCell: UICollectionViewCell {
         return UINib(nibName: identifier, bundle: .main)
     }
 
+    var isSelect = false
+
     func setImage(asset: PHAsset?) {
         if let asset = asset {
             PHImageManager.default().requestImage(for: asset,
@@ -39,11 +41,13 @@ final class PhotoListViewCollectionViewCell: UICollectionViewCell {
     func updateViewStatus() {
         selectingView.isHidden.toggle()
         checkView.isHidden.toggle()
+        isSelect.toggle()
     }
 
     func resetViewStatus() {
         selectingView.isHidden = true
         checkView.isHidden = true
+        isSelect = false
     }
 
 }

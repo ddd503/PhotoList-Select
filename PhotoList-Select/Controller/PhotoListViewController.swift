@@ -13,6 +13,10 @@ final class PhotoListViewController: UIViewController {
     @IBOutlet weak var photoListView: UICollectionView!
     private let coreDataStore = CoreDataStore()
     private var assetEntitys = [AssetEntity]()
+    // 選択状態のセルを管理する
+    private var selectedCellDic = [IndexPath: Bool]()
+    // 削除結果が保存されるまで使用される仮領域
+    private var deleteItemsIdDic = [String: Bool]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,6 +27,8 @@ final class PhotoListViewController: UIViewController {
         super.setEditing(editing, animated: animated)
         if !editing {
             deselectCell()
+            selectedCellDic = [:]
+            deleteItemsIdDic = [:]
         }
         setTrashButtonIsHidden(!editing)
     }
@@ -46,7 +52,7 @@ final class PhotoListViewController: UIViewController {
             }
 
             PhotoLibraryDataStore.requestAssets().forEach {
-                self.coreDataStore.insertAsset(asset: $0)
+                self.coreDataStore.insertAssetEntity(with: $0)
             }
 
             self.coreDataStore.fetchAllAssetEntity(completion: { (result) in
@@ -81,7 +87,16 @@ final class PhotoListViewController: UIViewController {
     }
 
     @objc private func didTapTrashButton() {
-        print("選択された写真を隠す")
+        selectedCellDic.forEach { [weak self] (indexPath, isSelect) in
+            guard let self = self else { return }
+            let deleteAssetEntity = self.assetEntitys[indexPath.item]
+            if let deleteAssetEntityID = deleteAssetEntity.localIdentifier {
+                // 最終的にlocalID別でvalueがtrueのものだけ消す
+                self.deleteItemsIdDic[deleteAssetEntityID] = isSelect
+            }
+        }
+        // 削除完了までeditボタンを押せなくする
+        print(deleteItemsIdDic)
     }
 
 }
@@ -105,6 +120,7 @@ extension PhotoListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if let selectCell = collectionView.cellForItem(at: indexPath) as? PhotoListViewCollectionViewCell, isEditing {
             selectCell.updateViewStatus()
+            selectedCellDic[indexPath] = selectCell.isSelect
         }
     }
 }

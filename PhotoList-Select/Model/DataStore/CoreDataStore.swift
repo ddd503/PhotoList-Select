@@ -21,7 +21,7 @@ final class CoreDataStore {
         return container
     }()
 
-    func save(with context: NSManagedObjectContext? = nil) {
+    func saveContext(_ context: NSManagedObjectContext? = nil) {
         let context = context ?? persistentContainer.viewContext
         if context.hasChanges {
             do {
@@ -33,7 +33,7 @@ final class CoreDataStore {
         }
     }
 
-    func insertAsset(asset: PHAsset) {
+    func insertAssetEntity(with asset: PHAsset) {
         guard isNotExist(localId: asset.localIdentifier) else { return }
 
         let context = persistentContainer.viewContext
@@ -43,7 +43,27 @@ final class CoreDataStore {
         }
         insertObject.localIdentifier = asset.localIdentifier
         insertObject.creationDate = asset.creationDate
-        save(with: context)
+        saveContext(context)
+    }
+
+    func updateAssetEntity(_ entity: AssetEntity) {
+        let context = persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<AssetEntity>(entityName: "AssetEntity")
+        fetchRequest.predicate = NSPredicate(format: "localIdentifier == %@", entity.localIdentifier ?? "")
+        fetchRequest.fetchLimit = 1
+
+        do {
+            guard let assetEntity = try context.fetch(fetchRequest).first else {
+                print("更新するentityが見つからない")
+                return
+            }
+            assetEntity.isDelete = true
+            saveContext(context)
+        } catch let error {
+            print("更新失敗")
+            print(error.localizedDescription)
+        }
+
     }
 
     func fetchAllAssetEntity(completion: @escaping (Result<[AssetEntity], NSError>) -> ()) {
