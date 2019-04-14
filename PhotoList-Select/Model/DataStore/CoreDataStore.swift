@@ -44,7 +44,7 @@ final class CoreDataStore {
         save(with: context)
     }
 
-    func fetchAllAssetEntity(comption: @escaping (Result<[AssetEntity], NSError>) -> ()) {
+    func fetchAllAssetEntity(completion: @escaping (Result<[AssetEntity], NSError>) -> ()) {
         let context = persistentContainer.viewContext
 
         context.perform {
@@ -59,10 +59,10 @@ final class CoreDataStore {
                                                                       cacheName: nil)
             do {
                 try fetchedResultsController.performFetch()
-                comption(.success((fetchedResultsController.fetchedObjects ?? []).compactMap { $0 as? AssetEntity }))
+                completion(.success((fetchedResultsController.fetchedObjects ?? []).compactMap { $0 as? AssetEntity }))
             } catch let error as NSError {
                 print("取得失敗: \(error.localizedDescription)")
-                comption(.failure(error))
+                completion(.failure(error))
             }
         }
     }

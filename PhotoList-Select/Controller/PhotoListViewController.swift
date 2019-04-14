@@ -10,6 +10,8 @@ import UIKit
 
 final class PhotoListViewController: UIViewController {
 
+    private let coreDataStore = CoreDataStore()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
