@@ -61,7 +61,7 @@ final class PhotoListViewController: UIViewController {
     private func deselectCell() {
         (0...assetEntitys.count).forEach { [weak self] in
             if let cell = self?.photoListView.cellForItem(at: IndexPath(item: $0, section: 0)) as? PhotoListViewCollectionViewCell {
-                cell.resetCheckMarkView()
+                cell.resetViewStatus()
             }
         }
 
@@ -87,7 +87,7 @@ extension PhotoListViewController: UICollectionViewDataSource {
 extension PhotoListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if let selectCell = collectionView.cellForItem(at: indexPath) as? PhotoListViewCollectionViewCell, isEditing {
-            selectCell.updateCheckMarkView()
+            selectCell.updateViewStatus()
         }
     }
 }

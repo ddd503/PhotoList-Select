@@ -22,28 +22,37 @@
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="AuW-Ak-yed">
                         <rect key="frame" x="0.0" y="0.0" width="97" height="93"/>
                     </imageView>
+                    <view hidden="YES" alpha="0.25" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RNZ-tQ-pq3">
+                        <rect key="frame" x="0.0" y="0.0" width="97" height="93"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
                     <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="check" translatesAutoresizingMaskIntoConstraints="NO" id="d87-71-5Jp">
-                        <rect key="frame" x="56" y="55" width="33.5" height="34"/>
+                        <rect key="frame" x="55.5" y="52.5" width="35" height="35"/>
                         <constraints>
+                            <constraint firstAttribute="width" constant="35" id="bd7-uX-5iy"/>
                             <constraint firstAttribute="width" secondItem="d87-71-5Jp" secondAttribute="height" multiplier="1:1" id="nUZ-ON-DIq"/>
                         </constraints>
                     </imageView>
                 </subviews>
             </view>
             <constraints>
-                <constraint firstItem="d87-71-5Jp" firstAttribute="centerY" secondItem="ZTg-uK-7eu" secondAttribute="centerY" multiplier="1.4" id="0Wi-lh-Z4n"/>
+                <constraint firstAttribute="trailing" secondItem="RNZ-tQ-pq3" secondAttribute="trailing" id="10N-ie-Sh3"/>
                 <constraint firstAttribute="bottom" secondItem="AuW-Ak-yed" secondAttribute="bottom" id="IS2-7z-yIz"/>
                 <constraint firstItem="AuW-Ak-yed" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="Iic-P0-AXT"/>
-                <constraint firstItem="d87-71-5Jp" firstAttribute="centerX" secondItem="ZTg-uK-7eu" secondAttribute="centerX" multiplier="1.5" id="Mcn-lQ-664"/>
-                <constraint firstItem="d87-71-5Jp" firstAttribute="width" secondItem="gTV-IL-0wX" secondAttribute="width" multiplier="0.35" id="RQv-TY-VDV"/>
+                <constraint firstItem="d87-71-5Jp" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" multiplier="1.5" id="O72-HW-e2n"/>
+                <constraint firstAttribute="bottom" secondItem="RNZ-tQ-pq3" secondAttribute="bottom" id="OAW-bJ-Ycq"/>
+                <constraint firstItem="RNZ-tQ-pq3" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="ZME-yT-7QI"/>
+                <constraint firstItem="d87-71-5Jp" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" multiplier="1.5" id="bdx-wK-L3F"/>
+                <constraint firstItem="RNZ-tQ-pq3" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="chg-aK-kO8"/>
                 <constraint firstItem="AuW-Ak-yed" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="gsR-cD-3RG"/>
                 <constraint firstAttribute="trailing" secondItem="AuW-Ak-yed" secondAttribute="trailing" id="xFa-Hd-ODF"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <size key="customSize" width="97" height="93"/>
             <connections>
-                <outlet property="checkMarkView" destination="d87-71-5Jp" id="Kkw-Ku-0jO"/>
+                <outlet property="checkView" destination="d87-71-5Jp" id="xyb-3e-8hW"/>
                 <outlet property="photoImageView" destination="AuW-Ak-yed" id="VQ3-fm-9Lc"/>
+                <outlet property="selectingView" destination="RNZ-tQ-pq3" id="SNw-9F-CKN"/>
             </connections>
             <point key="canvasLocation" x="171.73913043478262" y="118.86160714285714"/>
         </collectionViewCell>

@@ -12,7 +12,8 @@ import Photos
 final class PhotoListViewCollectionViewCell: UICollectionViewCell {
 
     @IBOutlet weak private var photoImageView: UIImageView!
-    @IBOutlet weak private var checkMarkView: UIImageView!
+    @IBOutlet weak private var selectingView: UIView!
+    @IBOutlet weak var checkView: UIImageView!
 
     static var identifier: String {
         return String(describing: self)
@@ -35,12 +36,14 @@ final class PhotoListViewCollectionViewCell: UICollectionViewCell {
         }
     }
 
-    func updateCheckMarkView() {
-        checkMarkView.isHidden.toggle()
+    func updateViewStatus() {
+        selectingView.isHidden.toggle()
+        checkView.isHidden.toggle()
     }
 
-    func resetCheckMarkView() {
-        checkMarkView.isHidden = true
+    func resetViewStatus() {
+        selectingView.isHidden = true
+        checkView.isHidden = true
     }
 
 }
