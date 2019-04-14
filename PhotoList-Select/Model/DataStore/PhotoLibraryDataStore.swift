@@ -39,4 +39,10 @@ final class PhotoLibraryDataStore {
         }
     }
 
+    static func requestAsset(by localId: String?) -> PHAsset? {
+        let localIdentifier = localId ?? ""
+        let assets = PHAsset.fetchAssets(withLocalIdentifiers: [localIdentifier], options: nil).objects(at: IndexSet(arrayLiteral: 0))
+        return assets.isEmpty ? nil : assets[0]
+    }
+
 }

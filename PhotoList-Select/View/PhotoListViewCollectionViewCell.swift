@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Photos
 
 final class PhotoListViewCollectionViewCell: UICollectionViewCell {
 
@@ -19,6 +20,19 @@ final class PhotoListViewCollectionViewCell: UICollectionViewCell {
 
     static func nib() -> UINib {
         return UINib(nibName: identifier, bundle: .main)
+    }
+
+    func setImage(asset: PHAsset?) {
+        if let asset = asset {
+            PHImageManager.default().requestImage(for: asset,
+                                                  targetSize: CGSize(width: 185, height: 185),
+                                                  contentMode: .aspectFill,
+                                                  options: nil) { (image, info) in
+                                                    // UIImageの取得
+            }
+        } else {
+            // デフォルトイメージのセット
+        }
     }
 
 }

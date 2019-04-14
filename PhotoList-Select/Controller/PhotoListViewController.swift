@@ -32,13 +32,13 @@ final class PhotoListViewController: UIViewController {
             PhotoLibraryDataStore.requestAssets().forEach {
                 self.coreDataStore.insertAsset(asset: $0)
             }
+
             self.coreDataStore.fetchAllAssetEntity(completion: { (result) in
                 switch result {
                 case .success(let assetEntitys):
                     self.assetEntitys = assetEntitys
                 case .failure(let error):
-                    print("取得失敗")
-                    print(error.localizedDescription)
+                    self.showAttentionAlert(title: "取得失敗", message: error.localizedDescription)
                 }
             })
 
@@ -57,6 +57,7 @@ extension PhotoListViewController: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoListViewCollectionViewCell.identifier, for: indexPath) as? PhotoListViewCollectionViewCell else {
             fatalError("not found PhotoListViewCollectionViewCell")
         }
+        cell.setImage(asset: PhotoLibraryDataStore.requestAsset(by: assetEntitys[indexPath.row].localIdentifier))
         return cell
     }
 }
