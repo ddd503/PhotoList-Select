@@ -10,10 +10,15 @@ import Photos
 
 final class PhotoLibraryDataStore {
 
-    static func requestAssets() -> PHFetchResult<PHAsset> {
+    static func requestAssets() -> [PHAsset] {
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-        return PHAsset.fetchAssets(with: .image, options: options)
+        let fetchResult = PHAsset.fetchAssets(with: .image, options: options)
+        var assets = [PHAsset]()
+        fetchResult.enumerateObjects(options: NSEnumerationOptions.concurrent) { (asset, index, _) in
+            assets.append(asset)
+        }
+        return assets
     }
 
     static func canAccess() -> Bool {
