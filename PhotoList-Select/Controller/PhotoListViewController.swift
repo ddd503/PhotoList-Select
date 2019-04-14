@@ -24,6 +24,7 @@ final class PhotoListViewController: UIViewController {
         if !editing {
             deselectCell()
         }
+        setTrashButtonIsHidden(!editing)
     }
 
     private func setup() {
@@ -33,6 +34,9 @@ final class PhotoListViewController: UIViewController {
                                forCellWithReuseIdentifier: PhotoListViewCollectionViewCell.identifier)
 
         navigationItem.rightBarButtonItem = editButtonItem
+        let trushButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(didTapTrashButton))
+        navigationItem.leftBarButtonItem = trushButton
+        setTrashButtonIsHidden(true)
 
         PhotoLibraryDataStore.requestAuthorization { [weak self] (success) in
             guard let self = self else { return }
@@ -64,7 +68,20 @@ final class PhotoListViewController: UIViewController {
                 cell.resetViewStatus()
             }
         }
+    }
 
+    private func setTrashButtonIsHidden(_ isHidden: Bool) {
+        if isHidden {
+            navigationItem.leftBarButtonItem?.isEnabled = false
+            navigationItem.leftBarButtonItem?.tintColor = .clear
+        } else {
+            navigationItem.leftBarButtonItem?.isEnabled = true
+            navigationItem.leftBarButtonItem?.tintColor = nil
+        }
+    }
+
+    @objc private func didTapTrashButton() {
+        print("選択された写真を隠す")
     }
 
 }
