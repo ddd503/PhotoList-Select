@@ -22,6 +22,8 @@ final class PhotoListViewController: UIViewController {
     private func setup() {
         photoListView.dataSource = self
         photoListView.delegate = self
+        photoListView.register(PhotoListViewCollectionViewCell.nib(),
+                               forCellWithReuseIdentifier: PhotoListViewCollectionViewCell.identifier)
 
         PhotoLibraryDataStore.requestAuthorization { [weak self] (success) in
             guard let self = self else { return }
@@ -29,6 +31,7 @@ final class PhotoListViewController: UIViewController {
                 self.showAttentionAlert(title: "アクセスできません", message: "写真ライブラリへのアクセスが許可されていません。")
                 return
             }
+
             PhotoLibraryDataStore.requestAssets().forEach {
                 self.coreDataStore.insertAsset(asset: $0)
             }
@@ -37,6 +40,7 @@ final class PhotoListViewController: UIViewController {
                 switch result {
                 case .success(let assetEntitys):
                     self.assetEntitys = assetEntitys
+                    self.photoListView.reloadData()
                 case .failure(let error):
                     self.showAttentionAlert(title: "取得失敗", message: error.localizedDescription)
                 }

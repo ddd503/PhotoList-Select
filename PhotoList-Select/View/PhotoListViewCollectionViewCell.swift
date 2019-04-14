@@ -27,11 +27,11 @@ final class PhotoListViewCollectionViewCell: UICollectionViewCell {
             PHImageManager.default().requestImage(for: asset,
                                                   targetSize: CGSize(width: 185, height: 185),
                                                   contentMode: .aspectFill,
-                                                  options: nil) { (image, info) in
-                                                    // UIImageの取得
+                                                  options: nil) { [weak self] (image, info) in
+                                                    self?.photoImageView.image = image
             }
         } else {
-            // デフォルトイメージのセット
+            photoImageView.image = UIImage(named: "no_image")
         }
     }
 

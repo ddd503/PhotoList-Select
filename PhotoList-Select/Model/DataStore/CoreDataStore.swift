@@ -34,6 +34,8 @@ final class CoreDataStore {
     }
 
     func insertAsset(asset: PHAsset) {
+        guard isNotExist(localId: asset.localIdentifier) else { return }
+
         let context = persistentContainer.viewContext
         guard let insertObject = NSEntityDescription.insertNewObject(forEntityName: "AssetEntity", into: context) as? AssetEntity else {
             print("保存失敗")
@@ -64,6 +66,15 @@ final class CoreDataStore {
                 completion(.failure(error))
             }
         }
+    }
+
+    func isNotExist(localId: String) -> Bool {
+        let context = persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<AssetEntity>(entityName: "AssetEntity")
+        fetchRequest.predicate = NSPredicate(format: "localIdentifier == %@", localId)
+        fetchRequest.fetchLimit = 1
+        let assetEntity = try? context.fetch(fetchRequest).first
+        return assetEntity == nil
     }
 
 }
