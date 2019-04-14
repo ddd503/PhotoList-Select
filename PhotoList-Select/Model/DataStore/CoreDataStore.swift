@@ -48,8 +48,7 @@ final class CoreDataStore {
         let context = persistentContainer.viewContext
 
         context.perform {
-            let fetchRequest = NSFetchRequest<NSFetchRequestResult>()
-            fetchRequest.entity = NSEntityDescription.entity(forEntityName: "AssetEntity", in: context)
+            let fetchRequest = NSFetchRequest<AssetEntity>(entityName: "AssetEntity")
             let sortDescriptor = NSSortDescriptor(key: "creationDate", ascending: true)
             fetchRequest.sortDescriptors = [sortDescriptor]
 
@@ -59,7 +58,7 @@ final class CoreDataStore {
                                                                       cacheName: nil)
             do {
                 try fetchedResultsController.performFetch()
-                completion(.success((fetchedResultsController.fetchedObjects ?? []).compactMap { $0 as? AssetEntity }))
+                completion(.success((fetchedResultsController.fetchedObjects ?? []).compactMap { $0 }))
             } catch let error as NSError {
                 print("取得失敗: \(error.localizedDescription)")
                 completion(.failure(error))
