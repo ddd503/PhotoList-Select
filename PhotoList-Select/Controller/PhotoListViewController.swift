@@ -87,23 +87,31 @@ final class PhotoListViewController: UIViewController {
     }
 
     @objc private func didTapTrashButton() {
+        guard !selectedCellDic.isEmpty else { return }
+
         selectedCellDic.forEach { [weak self] (indexPath, isSelect) in
             guard let self = self else { return }
             let deleteAssetEntity = self.assetEntitys[indexPath.item]
             if let deleteAssetEntityID = deleteAssetEntity.localIdentifier {
-                // 最終的にlocalID別でvalueがtrueのものだけ消す
+                // 保存が完了する前にリフレッシュされた場合はこのDicで削除済みのアイテムを確認する
                 self.deleteItemsIdDic[deleteAssetEntityID] = isSelect
             }
+            self.coreDataStore.updateAssetEntity(deleteAssetEntity)
         }
-        // 削除完了までeditボタンを押せなくする
-        print(deleteItemsIdDic)
+        // TODO: - 削除完了までeditボタンを押せなくする
+
+        // FIXME: 現状クラッシュ
+        photoListView.performBatchUpdates({
+            let deleteItemIndexs = selectedCellDic.filter { $0.value }.map { $0.key }
+            photoListView.deleteItems(at: deleteItemIndexs)
+        }, completion: nil)
     }
 
 }
 
 extension PhotoListViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        // ここをそのままfetchControllerにする
+        // TODO: - セクション分けするときはここでfetchControllerをみる
         return assetEntitys.count
     }
 
