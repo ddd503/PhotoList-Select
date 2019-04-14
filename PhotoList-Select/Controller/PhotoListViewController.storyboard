@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="3WM-XG-sd7">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="RXs-yS-IEo">
     <device id="retina6_1" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -10,20 +10,61 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Photo List View Controller-->
+        <!--PhotoList-Select-Sample-->
         <scene sceneID="3Th-0j-d1U">
             <objects>
                 <viewController storyboardIdentifier="PhotoListViewController" id="3WM-XG-sd7" customClass="PhotoListViewController" customModule="PhotoList_Select" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="hea-MP-tbS">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="JLl-vV-rts">
+                                <rect key="frame" x="0.0" y="88" width="414" height="808"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="zQS-CR-2SL">
+                                    <size key="itemSize" width="50" height="50"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells/>
+                            </collectionView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="JLl-vV-rts" firstAttribute="top" secondItem="89o-4l-LgR" secondAttribute="top" id="5MI-zH-NCe"/>
+                            <constraint firstItem="89o-4l-LgR" firstAttribute="trailing" secondItem="JLl-vV-rts" secondAttribute="trailing" id="7AG-TX-gBm"/>
+                            <constraint firstItem="JLl-vV-rts" firstAttribute="leading" secondItem="89o-4l-LgR" secondAttribute="leading" id="L24-Ar-ymZ"/>
+                            <constraint firstAttribute="bottom" secondItem="JLl-vV-rts" secondAttribute="bottom" id="hD1-Uf-74U"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="89o-4l-LgR"/>
                     </view>
+                    <navigationItem key="navigationItem" title="PhotoList-Select-Sample" id="Qqo-SP-olK"/>
+                    <connections>
+                        <outlet property="photoListView" destination="JLl-vV-rts" id="iF0-WF-kbD"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uuK-81-wNE" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="39" y="115"/>
+            <point key="canvasLocation" x="947.82608695652186" y="114.50892857142857"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="FZK-2o-9JR">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="RXs-yS-IEo" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="hAy-28-a5d">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="3WM-XG-sd7" kind="relationship" relationship="rootViewController" id="M32-0v-T6B"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="5t0-rh-Beg" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="37.681159420289859" y="114.50892857142857"/>
         </scene>
     </scenes>
 </document>

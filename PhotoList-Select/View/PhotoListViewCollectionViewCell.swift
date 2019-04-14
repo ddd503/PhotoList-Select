@@ -8,11 +8,17 @@
 
 import UIKit
 
-class PhotoListViewCollectionViewCell: UICollectionViewCell {
+final class PhotoListViewCollectionViewCell: UICollectionViewCell {
 
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
+    @IBOutlet weak private var photoImageView: UIImageView!
+    @IBOutlet weak private var checkMarkView: UIImageView!
+
+    static var identifier: String {
+        return String(describing: self)
+    }
+
+    static func nib() -> UINib {
+        return UINib(nibName: identifier, bundle: .main)
     }
 
 }
