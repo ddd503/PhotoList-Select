@@ -34,7 +34,9 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="89o-4l-LgR"/>
                     </view>
+                    <toolbarItems/>
                     <navigationItem key="navigationItem" title="PhotoList-Select-Sample" id="Qqo-SP-olK"/>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="photoListView" destination="JLl-vV-rts" id="iF0-WF-kbD"/>
                     </connections>

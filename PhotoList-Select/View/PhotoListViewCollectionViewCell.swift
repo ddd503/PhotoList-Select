@@ -35,4 +35,12 @@ final class PhotoListViewCollectionViewCell: UICollectionViewCell {
         }
     }
 
+    func updateCheckMarkView() {
+        checkMarkView.isHidden.toggle()
+    }
+
+    func resetCheckMarkView() {
+        checkMarkView.isHidden = true
+    }
+
 }

@@ -19,11 +19,20 @@ final class PhotoListViewController: UIViewController {
         setup()
     }
 
+    override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
+        if !editing {
+            deselectCell()
+        }
+    }
+
     private func setup() {
         photoListView.dataSource = self
         photoListView.delegate = self
         photoListView.register(PhotoListViewCollectionViewCell.nib(),
                                forCellWithReuseIdentifier: PhotoListViewCollectionViewCell.identifier)
+
+        navigationItem.rightBarButtonItem = editButtonItem
 
         PhotoLibraryDataStore.requestAuthorization { [weak self] (success) in
             guard let self = self else { return }
@@ -49,6 +58,15 @@ final class PhotoListViewController: UIViewController {
         }
     }
 
+    private func deselectCell() {
+        (0...assetEntitys.count).forEach { [weak self] in
+            if let cell = self?.photoListView.cellForItem(at: IndexPath(item: $0, section: 0)) as? PhotoListViewCollectionViewCell {
+                cell.resetCheckMarkView()
+            }
+        }
+
+    }
+
 }
 
 extension PhotoListViewController: UICollectionViewDataSource {
@@ -68,6 +86,8 @@ extension PhotoListViewController: UICollectionViewDataSource {
 
 extension PhotoListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print(indexPath)
+        if let selectCell = collectionView.cellForItem(at: indexPath) as? PhotoListViewCollectionViewCell, isEditing {
+            selectCell.updateCheckMarkView()
+        }
     }
 }
