@@ -13,7 +13,7 @@ final class PhotoListViewCollectionViewCell: UICollectionViewCell {
 
     @IBOutlet weak private var photoImageView: UIImageView!
     @IBOutlet weak private var selectingView: UIView!
-    @IBOutlet weak var checkView: UIImageView!
+    @IBOutlet weak private var checkView: UIImageView!
 
     static var identifier: String {
         return String(describing: self)
@@ -23,7 +23,9 @@ final class PhotoListViewCollectionViewCell: UICollectionViewCell {
         return UINib(nibName: identifier, bundle: .main)
     }
 
-    var isSelect = false
+    override func prepareForReuse() {
+        photoImageView.image = nil
+    }
 
     func setImage(asset: PHAsset?) {
         if let asset = asset {
@@ -38,16 +40,9 @@ final class PhotoListViewCollectionViewCell: UICollectionViewCell {
         }
     }
 
-    func updateViewStatus() {
-        selectingView.isHidden.toggle()
-        checkView.isHidden.toggle()
-        isSelect.toggle()
-    }
-
-    func resetViewStatus() {
-        selectingView.isHidden = true
-        checkView.isHidden = true
-        isSelect = false
+    func updateViewStatus(isSelect: Bool) {
+        selectingView.isHidden = !isSelect
+        checkView.isHidden = !isSelect
     }
 
 }

@@ -38,6 +38,7 @@ final class PhotoListViewController: UIViewController {
         photoListView.delegate = self
         photoListView.register(PhotoListViewCollectionViewCell.nib(),
                                forCellWithReuseIdentifier: PhotoListViewCollectionViewCell.identifier)
+        photoListView.allowsMultipleSelection = true
 
         navigationItem.rightBarButtonItem = editButtonItem
         let trushButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(didTapTrashButton))
@@ -70,8 +71,11 @@ final class PhotoListViewController: UIViewController {
 
     private func deselectCell() {
         (0...assetEntitys.count).forEach { [weak self] in
-            if let cell = self?.photoListView.cellForItem(at: IndexPath(item: $0, section: 0)) as? PhotoListViewCollectionViewCell {
-                cell.resetViewStatus()
+            let indexPath = IndexPath(item: $0, section: 0)
+            if let cell = self?.photoListView.cellForItem(at: indexPath) as? PhotoListViewCollectionViewCell {
+                self?.photoListView.deselectItem(at: indexPath, animated: true)
+                cell.updateViewStatus(isSelect: false)
+                selectedCellDic = [:]
             }
         }
     }
@@ -101,10 +105,11 @@ final class PhotoListViewController: UIViewController {
         // TODO: - 削除完了までeditボタンを押せなくする
 
         // FIXME: 現状クラッシュ
-        photoListView.performBatchUpdates({
-            let deleteItemIndexs = selectedCellDic.filter { $0.value }.map { $0.key }
-            photoListView.deleteItems(at: deleteItemIndexs)
-        }, completion: nil)
+        print(photoListView.indexPathsForSelectedItems!)
+//        photoListView.performBatchUpdates({
+//            let deleteItemIndexs = selectedCellDic.filter { $0.value }.map { $0.key }
+//            photoListView.deleteItems(at: deleteItemIndexs)
+//        }, completion: nil)
     }
 
 }
@@ -126,9 +131,21 @@ extension PhotoListViewController: UICollectionViewDataSource {
 
 extension PhotoListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if let selectCell = collectionView.cellForItem(at: indexPath) as? PhotoListViewCollectionViewCell, isEditing {
-            selectCell.updateViewStatus()
-            selectedCellDic[indexPath] = selectCell.isSelect
+        if let selectCell = collectionView.cellForItem(at: indexPath) as? PhotoListViewCollectionViewCell {
+            selectCell.updateViewStatus(isSelect: true)
+            selectedCellDic[indexPath] = true
         }
+    }
+    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        if let selectCell = collectionView.cellForItem(at: indexPath) as? PhotoListViewCollectionViewCell {
+            selectCell.updateViewStatus(isSelect: false)
+            selectedCellDic[indexPath] = false
+        }
+    }
+    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        return isEditing
+    }
+    func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
+        return isEditing
     }
 }
