@@ -104,12 +104,14 @@ final class PhotoListViewController: UIViewController {
         }
         // TODO: - 削除完了までeditボタンを押せなくする
 
-        // FIXME: 現状クラッシュ
-        print(photoListView.indexPathsForSelectedItems!)
-//        photoListView.performBatchUpdates({
-//            let deleteItemIndexs = selectedCellDic.filter { $0.value }.map { $0.key }
-//            photoListView.deleteItems(at: deleteItemIndexs)
-//        }, completion: nil)
+        photoListView.performBatchUpdates({
+            let deleteItemIndexs = selectedCellDic.filter { $0.value }.map { $0.key }
+            deleteItemIndexs.forEach {
+                // 実際に観にいく方も消す必要がある
+                assetEntitys.remove(at: $0.row)
+            }
+            photoListView.deleteItems(at: deleteItemIndexs)
+        }, completion: nil)
     }
 
 }
