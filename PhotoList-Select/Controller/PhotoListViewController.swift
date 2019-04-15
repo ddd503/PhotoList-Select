@@ -107,7 +107,8 @@ final class PhotoListViewController: UIViewController {
         photoListView.performBatchUpdates({
             let deleteItemIndexs = selectedCellDic.filter { $0.value }.map { $0.key }
             deleteItemIndexs.forEach {
-                // 実際に観にいく方も消す必要がある
+                // TODO - CoreData側のデータもisDeleteを更新しておき、fetchの際に弾く必要がある
+                // 実際に観にいく方を消しておく必要がある（deleteItems消すはずのindexPathのitemがdataSourceに残っているとクラッシュするため）
                 assetEntitys.remove(at: $0.row)
             }
             photoListView.deleteItems(at: deleteItemIndexs)
