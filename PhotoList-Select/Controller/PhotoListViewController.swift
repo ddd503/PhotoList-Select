@@ -12,7 +12,7 @@ final class PhotoListViewController: UIViewController {
 
     @IBOutlet weak var photoListView: UICollectionView!
     private let coreDataStore = CoreDataStore()
-    private var assetEntitys = [AssetEntity]()
+    private var assetEntitysDic = [String: AssetEntity]()
     // 選択状態のセルを管理する
     private var selectedCellDic = [IndexPath: Bool]()
     // 削除結果が保存されるまで使用される仮領域
@@ -56,13 +56,16 @@ final class PhotoListViewController: UIViewController {
                 self.coreDataStore.insertAssetEntity(with: $0)
             }
 
-            self.coreDataStore.fetchAllAssetEntity(completion: { (result) in
+            self.coreDataStore.fetchAllAssetEntity(completion: { [weak self] (result) in
                 switch result {
                 case .success(let assetEntitys):
-                    self.assetEntitys = assetEntitys
-                    self.photoListView.reloadData()
+                    assetEntitys.forEach {
+                        guard let localId = $0.localIdentifier else { return }
+                        self?.assetEntitysDic[localId] = $0
+                    }
+                    self?.photoListView.reloadData()
                 case .failure(let error):
-                    self.showAttentionAlert(title: "取得失敗", message: error.localizedDescription)
+                    self?.showAttentionAlert(title: "取得失敗", message: error.localizedDescription)
                 }
             })
 
@@ -70,7 +73,7 @@ final class PhotoListViewController: UIViewController {
     }
 
     private func deselectCell() {
-        (0...assetEntitys.count).forEach { [weak self] in
+        (0...assetEntitysDic.count).forEach { [weak self] in
             let indexPath = IndexPath(item: $0, section: 0)
             if let cell = self?.photoListView.cellForItem(at: indexPath) as? PhotoListViewCollectionViewCell {
                 self?.photoListView.deselectItem(at: indexPath, animated: true)
@@ -91,28 +94,38 @@ final class PhotoListViewController: UIViewController {
     }
 
     @objc private func didTapTrashButton() {
-        guard !selectedCellDic.isEmpty else { return }
-
-        selectedCellDic.forEach { [weak self] (indexPath, isSelect) in
-            guard let self = self else { return }
-            let deleteAssetEntity = self.assetEntitys[indexPath.item]
-            if let deleteAssetEntityID = deleteAssetEntity.localIdentifier {
-                // 保存が完了する前にリフレッシュされた場合はこのDicで削除済みのアイテムを確認する
-                self.deleteItemsIdDic[deleteAssetEntityID] = isSelect
-            }
-            self.coreDataStore.updateAssetEntity(deleteAssetEntity)
-        }
-        // TODO: - 削除完了までeditボタンを押せなくする
-
-        photoListView.performBatchUpdates({
-            let deleteItemIndexs = selectedCellDic.filter { $0.value }.map { $0.key }
-            deleteItemIndexs.forEach {
-                // TODO - CoreData側のデータもisDeleteを更新しておき、fetchの際に弾く必要がある
-                // 実際に観にいく方を消しておく必要がある（deleteItems消すはずのindexPathのitemがdataSourceに残っているとクラッシュするため）
-                assetEntitys.remove(at: $0.row)
-            }
-            photoListView.deleteItems(at: deleteItemIndexs)
-        }, completion: nil)
+        // Valueが0ならreturn
+//        guard !(selectedItems.compactMap { $0.value }.isEmpty) else { return }
+//        let deleteItemIds = selectedItems.compactMap { $0.key }
+//        let copyAssetEntitys = assetEntitysDic
+//        assetEntitysDic.forEach {
+//            guard let localId = $0.localIdentifier else { return }
+//            if let localId = $0.localIdentifier, deleteItemIds.contains(localId) {
+//
+//            }
+//        }
+//        selectedCellDic.forEach { [weak self] (indexPath, isSelect) in
+//            guard let self = self else { return }
+//            let deleteAssetEntity = self.assetEntitys[indexPath.item]
+//            if let deleteAssetEntityID = deleteAssetEntity.localIdentifier {
+//                // 保存が完了する前にリフレッシュされた場合はこのDicで削除済みのアイテムを確認する
+//                self.deleteItemsIdDic[deleteAssetEntityID] = isSelect
+//            }
+//            self.coreDataStore.updateAssetEntity(deleteAssetEntity)
+//        }
+//        // TODO: - 削除完了までeditボタンを押せなくする
+//
+//        photoListView.performBatchUpdates({
+//            let deleteItemIndexs = selectedCellDic.filter { $0.value }.map { $0.key }
+//            var afterAssetEntitys = assetEntitys
+//            deleteItemIndexs.forEach {
+//                // TODO - CoreData側のデータもisDeleteを更新しておき、fetchの際に弾く必要がある
+//                // 実際に観にいく方を消しておく必要がある（deleteItems消すはずのindexPathのitemがdataSourceに残っているとクラッシュするため）
+//                deleteAssetEntitys.append(assetEntitys[$0.row])
+//            }
+//            assetEntitys =
+//            photoListView.deleteItems(at: deleteItemIndexs)
+//        }, completion: nil)
     }
 
 }
@@ -120,14 +133,15 @@ final class PhotoListViewController: UIViewController {
 extension PhotoListViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // TODO: - セクション分けするときはここでfetchControllerをみる
-        return assetEntitys.count
+        return assetEntitysDic.compactMap { $0.value }.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoListViewCollectionViewCell.identifier, for: indexPath) as? PhotoListViewCollectionViewCell else {
             fatalError("not found PhotoListViewCollectionViewCell")
         }
-        cell.setImage(asset: PhotoLibraryDataStore.requestAsset(by: assetEntitys[indexPath.row].localIdentifier))
+
+        cell.setImage(asset: PhotoLibraryDataStore.requestAsset(by: assetEntitysDic[indexPath.row].localIdentifier))
         return cell
     }
 }
@@ -136,13 +150,19 @@ extension PhotoListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if let selectCell = collectionView.cellForItem(at: indexPath) as? PhotoListViewCollectionViewCell {
             selectCell.updateViewStatus(isSelect: true)
-            selectedCellDic[indexPath] = true
+            if let localId = assetEntitys[indexPath.item].localIdentifier {
+                selectedItems[localId] = indexPath
+            }
+//            selectedCellDic[indexPath] = true
         }
     }
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         if let selectCell = collectionView.cellForItem(at: indexPath) as? PhotoListViewCollectionViewCell {
             selectCell.updateViewStatus(isSelect: false)
-            selectedCellDic[indexPath] = false
+            if let localId = assetEntitys[indexPath.item].localIdentifier {
+                selectedItems.removeValue(forKey: localId)
+            }
+//            selectedCellDic[indexPath] = false
         }
     }
     func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
