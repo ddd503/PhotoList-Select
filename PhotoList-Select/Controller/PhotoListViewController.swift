@@ -71,6 +71,7 @@ final class PhotoListViewController: UIViewController {
             if let cell = self?.photoListView.cellForItem(at: indexPath) as? PhotoListViewCollectionViewCell {
                 self?.photoListView.deselectItem(at: indexPath, animated: true)
                 cell.updateViewStatus(isSelect: false)
+                self?.selectedItems = [:]
             }
         }
     }
@@ -95,7 +96,6 @@ final class PhotoListViewController: UIViewController {
                 switch result {
                 case .success(let assetEntity):
                     assetEntity.isHidden = true
-                    print(assetEntity.managedObjectContext as Any)
                     self?.coreDataStore.saveContext(assetEntity.managedObjectContext)
                 case .failure(let nserror):
                     print("削除更新失敗")
