@@ -36,10 +36,7 @@ final class PhotoListViewController: UIViewController {
                                forCellWithReuseIdentifier: PhotoListViewCollectionViewCell.identifier)
         photoListView.allowsMultipleSelection = true
 
-        navigationItem.rightBarButtonItem = editButtonItem
-        let trushButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(didTapTrashButton))
-        navigationItem.leftBarButtonItem = trushButton
-        setTrashButtonIsHidden(true)
+        setupTrashButton()
 
         PhotoLibraryDataStore.requestAuthorization { [weak self] (success) in
             guard let self = self else { return }
@@ -47,22 +44,36 @@ final class PhotoListViewController: UIViewController {
                 self.showAttentionAlert(title: "アクセスできません", message: "写真ライブラリへのアクセスが許可されていません。")
                 return
             }
-
-            PhotoLibraryDataStore.requestAssets().forEach {
-                self.coreDataStore.insertAssetEntity(with: $0)
-            }
-
-            self.coreDataStore.fetchAllAssetEntity(completion: { [weak self] (result) in
-                switch result {
-                case .success(let assetEntitys):
-                    self?.assetEntitys = assetEntitys
-                    self?.photoListView.reloadData()
-                case .failure(let error):
-                    self?.showAttentionAlert(title: "取得失敗", message: error.localizedDescription)
-                }
-            })
-
+            // ローカルから取得して永続化
+            self.prepareAssetEntitys()
+            // 永続化した写真(AssetEntity)を全てfetch
+            self.requestAssetEntitys()
         }
+    }
+
+    private func setupTrashButton() {
+        navigationItem.rightBarButtonItem = editButtonItem
+        let trushButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(didTapTrashButton))
+        navigationItem.leftBarButtonItem = trushButton
+        setTrashButtonIsHidden(true)
+    }
+
+    private func prepareAssetEntitys() {
+        PhotoLibraryDataStore.requestAssets().forEach {
+            self.coreDataStore.insertAssetEntity(with: $0)
+        }
+    }
+
+    private func requestAssetEntitys() {
+        self.coreDataStore.fetchAllAssetEntity(completion: { [weak self] (result) in
+            switch result {
+            case .success(let assetEntitys):
+                self?.assetEntitys = assetEntitys
+                self?.photoListView.reloadData()
+            case .failure(let error):
+                self?.showAttentionAlert(title: "取得失敗", message: error.localizedDescription)
+            }
+        })
     }
 
     private func deselectCell() {
@@ -86,10 +97,7 @@ final class PhotoListViewController: UIViewController {
         }
     }
 
-    @objc private func didTapTrashButton() {
-        // 選択数が0ならreturn
-        guard !selectedItems.isEmpty else { return }
-
+    private func hiddenSelectedItems() {
         // DB側の値を更新
         selectedItems.forEach {
             coreDataStore.fetchAsset(by: $0.key, completion: { [weak self] (result) in
@@ -119,6 +127,12 @@ final class PhotoListViewController: UIViewController {
         }) { [weak self] (_) in
             self?.selectedItems = [:]
         }
+    }
+
+    @objc private func didTapTrashButton() {
+        // 選択数が0ならreturn
+        guard !selectedItems.isEmpty else { return }
+        hiddenSelectedItems()
     }
 
 }

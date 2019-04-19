@@ -47,12 +47,12 @@ final class CoreDataStore {
         saveContext(context)
     }
 
-    // isHiddenがtrueでないもののみ取得
     func fetchAllAssetEntity(completion: @escaping (Result<[AssetEntity], NSError>) -> ()) {
         let context = persistentContainer.viewContext
 
         context.perform {
             let fetchRequest = NSFetchRequest<AssetEntity>(entityName: "AssetEntity")
+            // isHiddenがtrueでないもののみ取得（削除していないもの）
             let predicate = NSPredicate(format: "isHidden != %@", NSNumber(booleanLiteral: true))
             fetchRequest.predicate = predicate
             let sortDescriptor = NSSortDescriptor(key: "creationDate", ascending: true)
