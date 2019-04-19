@@ -46,26 +46,6 @@ final class CoreDataStore {
         saveContext(context)
     }
 
-    func updateAssetEntity(_ entity: AssetEntity) {
-        let context = persistentContainer.viewContext
-        let fetchRequest = NSFetchRequest<AssetEntity>(entityName: "AssetEntity")
-        fetchRequest.predicate = NSPredicate(format: "localIdentifier == %@", entity.localIdentifier ?? "")
-        fetchRequest.fetchLimit = 1
-
-        do {
-            guard let assetEntity = try context.fetch(fetchRequest).first else {
-                print("更新するentityが見つからない")
-                return
-            }
-            assetEntity.isDelete = true
-            saveContext(context)
-        } catch let error {
-            print("更新失敗")
-            print(error.localizedDescription)
-        }
-
-    }
-
     func fetchAllAssetEntity(completion: @escaping (Result<[AssetEntity], NSError>) -> ()) {
         let context = persistentContainer.viewContext
 
@@ -86,6 +66,24 @@ final class CoreDataStore {
                 completion(.failure(error))
             }
         }
+    }
+
+    func fetchAsset(by localId: String, completion: @escaping (Result<AssetEntity, NSError>) -> ()) {
+        let context = persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<AssetEntity>(entityName: "AssetEntity")
+        fetchRequest.predicate = NSPredicate(format: "localIdentifier == %@", localId)
+        fetchRequest.fetchLimit = 1
+
+        do {
+            guard let assetEntity = try context.fetch(fetchRequest).first else {
+                print("取得失敗") // 適当なエラーを投げる
+                return
+            }
+            completion(.success(assetEntity))
+        } catch let error as NSError {
+            completion(.failure(error))
+        }
+        
     }
 
     func isNotExist(localId: String) -> Bool {
