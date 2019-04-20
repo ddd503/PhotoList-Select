@@ -10,7 +10,7 @@ import UIKit
 
 final class PhotoListViewController: UIViewController {
 
-    @IBOutlet weak var photoListView: UICollectionView!
+    @IBOutlet weak private var photoListView: UICollectionView!
     private let coreDataStore = CoreDataStore()
     private var assetEntitys = [AssetEntity]()
     // 選択されているセルを持つ
@@ -30,13 +30,9 @@ final class PhotoListViewController: UIViewController {
     }
 
     private func setup() {
-        photoListView.dataSource = self
-        photoListView.delegate = self
-        photoListView.register(PhotoListViewCollectionViewCell.nib(),
-                               forCellWithReuseIdentifier: PhotoListViewCollectionViewCell.identifier)
-        photoListView.allowsMultipleSelection = true
-
+        setupPhotoListView()
         setupTrashButton()
+        setupPanGesture()
 
         PhotoLibraryDataStore.requestAuthorization { [weak self] (success) in
             guard let self = self else { return }
@@ -51,11 +47,24 @@ final class PhotoListViewController: UIViewController {
         }
     }
 
+    private func setupPhotoListView() {
+        photoListView.dataSource = self
+        photoListView.delegate = self
+        photoListView.register(PhotoListViewCollectionViewCell.nib(),
+                               forCellWithReuseIdentifier: PhotoListViewCollectionViewCell.identifier)
+        photoListView.allowsMultipleSelection = true
+    }
+
     private func setupTrashButton() {
         navigationItem.rightBarButtonItem = editButtonItem
         let trushButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(didTapTrashButton))
         navigationItem.leftBarButtonItem = trushButton
         setTrashButtonIsHidden(true)
+    }
+
+    private func setupPanGesture() {
+        let gesture = UIPanGestureRecognizer(target: self, action: #selector(didPan(toSelectCells:)))
+        photoListView.addGestureRecognizer(gesture)
     }
 
     private func prepareAssetEntitys() {
@@ -136,6 +145,41 @@ final class PhotoListViewController: UIViewController {
         hiddenSelectedItems()
     }
 
+
+    @objc private func didPan(toSelectCells panGesture: UIPanGestureRecognizer) {
+        guard isEditing else { return }
+
+        switch panGesture.state {
+        case .began:
+            photoListView.isUserInteractionEnabled = false
+            photoListView.isScrollEnabled = false
+        case .changed:
+            let location = panGesture.location(in: photoListView)
+
+            if let indexPath: IndexPath = photoListView.indexPathForItem(at: location),
+                let selectCell = photoListView.cellForItem(at: indexPath) as? PhotoListViewCollectionViewCell,
+                let localId = assetEntitys[indexPath.item].localIdentifier {
+
+                let isSelect = selectedItems[localId] != nil
+
+                if isSelect {
+                    selectCell.updateViewStatus(isSelect: false)
+                    selectedItems.removeValue(forKey: localId)
+
+                } else {
+                    selectCell.updateViewStatus(isSelect: true)
+                    selectedItems[localId] = indexPath
+                }
+
+            }
+        case .ended:
+            photoListView.isScrollEnabled = true
+            photoListView.isUserInteractionEnabled = true
+        default: break
+        }
+    }
+
+
 }
 
 extension PhotoListViewController: UICollectionViewDataSource {
@@ -148,7 +192,6 @@ extension PhotoListViewController: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoListViewCollectionViewCell.identifier, for: indexPath) as? PhotoListViewCollectionViewCell else {
             fatalError("not found PhotoListViewCollectionViewCell")
         }
-
         cell.setImage(asset: PhotoLibraryDataStore.requestAsset(by: assetEntitys[indexPath.item].localIdentifier))
         return cell
     }

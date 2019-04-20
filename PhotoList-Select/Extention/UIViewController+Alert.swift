@@ -30,7 +30,7 @@ extension UIViewController {
         label.alpha = 0.0
         self.view.addSubview(label)
 
-        UIView.animateKeyframes(withDuration: 6.0, delay: 0, options: [], animations: {
+        UIView.animateKeyframes(withDuration: 6.0, delay: 0.5, options: [], animations: {
             UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.1, animations: {
                 label.isHidden = false
                 label.alpha = 1.0
