@@ -212,12 +212,15 @@ extension PhotoListViewController: UICollectionViewDelegate {
                 }
             }
         } else {
+            collectionView.deselectItem(at: indexPath, animated: false)
             guard let detailVC = DetailPhotoViewController.make(asset: PhotoLibraryDataStore.requestAsset(by: assetEntitys[indexPath.item].localIdentifier)) else { return }
             navigationController?.pushViewController(detailVC, animated: true)
+            collectionView.deselectItem(at: indexPath, animated: false)
         }
 
     }
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        guard isEditing else { return }
         if let selectCell = collectionView.cellForItem(at: indexPath) as? PhotoListViewCollectionViewCell {
             selectCell.updateViewStatus(isSelect: false)
             if let localId = assetEntitys[indexPath.item].localIdentifier {
@@ -226,10 +229,4 @@ extension PhotoListViewController: UICollectionViewDelegate {
             }
         }
     }
-//    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-//        return isEditing
-//    }
-//    func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
-//        return isEditing
-//    }
 }

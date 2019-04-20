@@ -18,28 +18,33 @@ extension UIViewController {
     }
 
     func showFinishLabel() {
-        let label = UILabel(frame: CGRect(x: 0, y: 0, width: self.view.bounds.size.width * 0.8, height: self.view.bounds.size.height * 0.08))
-        label.center.x = self.view.center.x
-        label.center.y = self.view.center.y * 1.8
-        label.text = "削除が完了しました。"
-        label.backgroundColor = .darkGray
-        label.textColor = .white
-        label.textAlignment = .center
-        label.font = UIFont.systemFont(ofSize: 20)
-        label.isHidden = true
-        label.alpha = 0.0
-        self.view.addSubview(label)
+        if !self.view.subviews.isEmpty, let frontView = self.view.subviews.last as? FinishView {
+            // すでに出ていたら消す
+            frontView.removeFromSuperview()
+        }
+        
+        let finishView = FinishView.make()
+        finishView.frame = CGRect(x: 0,
+                                  y: 0,
+                                  width: self.view.bounds.size.width * 0.8,
+                                  height: self.view.bounds.size.height * 0.08)
+        finishView.messageLabel.text = "削除が完了しました。"
+        finishView.isHidden = true
+        finishView.alpha = 0.0
+        finishView.center.x = self.view.center.x
+        finishView.center.y = self.view.center.y * 1.8
+        self.view.addSubview(finishView)
 
-        UIView.animateKeyframes(withDuration: 6.0, delay: 0.5, options: [], animations: {
-            UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.1, animations: {
-                label.isHidden = false
-                label.alpha = 1.0
+        UIView.animateKeyframes(withDuration: 6.0, delay: 0.3, options: [], animations: {
+            UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.05, animations: {
+                finishView.isHidden = false
+                finishView.alpha = 1.0
             })
             UIView.addKeyframe(withRelativeStartTime: 0.83, relativeDuration: 0.1, animations: {
-                label.alpha = 0.0
+                finishView.alpha = 0.0
             })
         }, completion: { (_) in
-            label.removeFromSuperview()
+            finishView.removeFromSuperview()
         })
     }
 

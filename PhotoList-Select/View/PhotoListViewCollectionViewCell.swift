@@ -27,6 +27,13 @@ final class PhotoListViewCollectionViewCell: UICollectionViewCell {
         photoImageView.image = nil
     }
 
+    override var isSelected: Bool {
+        didSet {
+            selectingView.isHidden = !isSelected
+            checkView.isHidden = !isSelected
+        }
+    }
+
     func setImage(asset: PHAsset?) {
         if let asset = asset {
             PHImageManager.default().requestImage(for: asset,
@@ -41,8 +48,10 @@ final class PhotoListViewCollectionViewCell: UICollectionViewCell {
     }
 
     func updateViewStatus(isSelect: Bool) {
-        selectingView.isHidden = !isSelect
-        checkView.isHidden = !isSelect
+//        selectingView.isHidden = !isSelect
+//        checkView.isHidden = !isSelect
+//        selectingView.isHidden = !isSelected
+//        checkView.isHidden = !isSelected
     }
 
 }
