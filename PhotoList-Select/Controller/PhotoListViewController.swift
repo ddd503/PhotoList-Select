@@ -21,8 +21,8 @@ final class PhotoListViewController: UIViewController {
         super.viewDidLoad()
         setup()
 
-        let documentDirPath = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true)
-        print(documentDirPath)
+//        let documentDirPath = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true)
+//        print(documentDirPath)
     }
 
     override func setEditing(_ editing: Bool, animated: Bool) {
@@ -109,8 +109,6 @@ final class PhotoListViewController: UIViewController {
             navigationItem.leftBarButtonItem?.tintColor = nil
         }
     }
-
-//    private func isSelect() -> Bool {}
 
     private func hiddenSelectedItems() {
         // DB側の値を更新
