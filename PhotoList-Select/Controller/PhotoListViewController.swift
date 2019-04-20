@@ -15,10 +15,14 @@ final class PhotoListViewController: UIViewController {
     private var assetEntitys = [AssetEntity]()
     // 選択されているセルを持つ
     private var selectedItems = [String: IndexPath]()
+    private var lastPanIndexPath = IndexPath()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
+
+        let documentDirPath = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true)
+        print(documentDirPath)
     }
 
     override func setEditing(_ editing: Bool, animated: Bool) {
@@ -106,6 +110,8 @@ final class PhotoListViewController: UIViewController {
         }
     }
 
+//    private func isSelect() -> Bool {}
+
     private func hiddenSelectedItems() {
         // DB側の値を更新
         selectedItems.forEach {
@@ -145,7 +151,6 @@ final class PhotoListViewController: UIViewController {
         hiddenSelectedItems()
     }
 
-
     @objc private func didPan(toSelectCells panGesture: UIPanGestureRecognizer) {
         guard isEditing else { return }
 
@@ -160,17 +165,18 @@ final class PhotoListViewController: UIViewController {
                 let selectCell = photoListView.cellForItem(at: indexPath) as? PhotoListViewCollectionViewCell,
                 let localId = assetEntitys[indexPath.item].localIdentifier {
 
+                guard lastPanIndexPath != indexPath else { return }
+
                 let isSelect = selectedItems[localId] != nil
 
                 if isSelect {
                     selectCell.updateViewStatus(isSelect: false)
                     selectedItems.removeValue(forKey: localId)
-
                 } else {
                     selectCell.updateViewStatus(isSelect: true)
                     selectedItems[localId] = indexPath
                 }
-
+                lastPanIndexPath = indexPath
             }
         case .ended:
             photoListView.isScrollEnabled = true
@@ -199,25 +205,33 @@ extension PhotoListViewController: UICollectionViewDataSource {
 
 extension PhotoListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if let selectCell = collectionView.cellForItem(at: indexPath) as? PhotoListViewCollectionViewCell {
-            selectCell.updateViewStatus(isSelect: true)
-            if let localId = assetEntitys[indexPath.item].localIdentifier {
-                selectedItems[localId] = indexPath
+        if isEditing {
+            if let selectCell = collectionView.cellForItem(at: indexPath) as? PhotoListViewCollectionViewCell {
+                selectCell.updateViewStatus(isSelect: true)
+                if let localId = assetEntitys[indexPath.item].localIdentifier {
+                    selectedItems[localId] = indexPath
+                    print("didSelect")
+                }
             }
+        } else {
+            guard let detailVC = DetailPhotoViewController.make(asset: PhotoLibraryDataStore.requestAsset(by: assetEntitys[indexPath.item].localIdentifier)) else { return }
+            navigationController?.pushViewController(detailVC, animated: true)
         }
+
     }
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         if let selectCell = collectionView.cellForItem(at: indexPath) as? PhotoListViewCollectionViewCell {
             selectCell.updateViewStatus(isSelect: false)
             if let localId = assetEntitys[indexPath.item].localIdentifier {
                 selectedItems.removeValue(forKey: localId)
+                print("didDeselect")
             }
         }
     }
-    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        return isEditing
-    }
-    func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
-        return isEditing
-    }
+//    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+//        return isEditing
+//    }
+//    func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
+//        return isEditing
+//    }
 }
