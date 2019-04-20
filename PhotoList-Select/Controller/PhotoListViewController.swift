@@ -126,6 +126,7 @@ final class PhotoListViewController: UIViewController {
             photoListView.deleteItems(at: selectedItems.map { $0.value })
         }) { [weak self] (_) in
             self?.selectedItems = [:]
+            self?.showFinishLabel()
         }
     }
 
