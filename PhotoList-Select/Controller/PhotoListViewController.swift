@@ -21,8 +21,8 @@ final class PhotoListViewController: UIViewController {
         super.viewDidLoad()
         setup()
 
-//        let documentDirPath = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true)
-//        print(documentDirPath)
+        //        let documentDirPath = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true)
+        //        print(documentDirPath)
     }
 
     override func setEditing(_ editing: Bool, animated: Bool) {
@@ -92,11 +92,8 @@ final class PhotoListViewController: UIViewController {
     private func deselectCell() {
         (0...assetEntitys.count).forEach { [weak self] in
             let indexPath = IndexPath(item: $0, section: 0)
-            if let cell = self?.photoListView.cellForItem(at: indexPath) as? PhotoListViewCollectionViewCell {
-                self?.photoListView.deselectItem(at: indexPath, animated: true)
-                cell.updateViewStatus(isSelect: false)
-                self?.selectedItems = [:]
-            }
+            self?.photoListView.deselectItem(at: indexPath, animated: true)
+            self?.selectedItems = [:]
         }
     }
 
@@ -160,7 +157,6 @@ final class PhotoListViewController: UIViewController {
             let location = panGesture.location(in: photoListView)
 
             if let indexPath: IndexPath = photoListView.indexPathForItem(at: location),
-                let selectCell = photoListView.cellForItem(at: indexPath) as? PhotoListViewCollectionViewCell,
                 let localId = assetEntitys[indexPath.item].localIdentifier {
 
                 guard lastPanIndexPath != indexPath else { return }
@@ -168,12 +164,14 @@ final class PhotoListViewController: UIViewController {
                 let isSelect = selectedItems[localId] != nil
 
                 if isSelect {
-                    selectCell.updateViewStatus(isSelect: false)
                     selectedItems.removeValue(forKey: localId)
+                    photoListView.deselectItem(at: indexPath, animated: false)
                 } else {
-                    selectCell.updateViewStatus(isSelect: true)
                     selectedItems[localId] = indexPath
+                    // TODO: - 複数セル選択時に挙動を確認
+                    photoListView.selectItem(at: indexPath, animated: false, scrollPosition: .bottom)
                 }
+
                 lastPanIndexPath = indexPath
             }
         case .ended:
@@ -204,12 +202,9 @@ extension PhotoListViewController: UICollectionViewDataSource {
 extension PhotoListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if isEditing {
-            if let selectCell = collectionView.cellForItem(at: indexPath) as? PhotoListViewCollectionViewCell {
-                selectCell.updateViewStatus(isSelect: true)
-                if let localId = assetEntitys[indexPath.item].localIdentifier {
-                    selectedItems[localId] = indexPath
-                    print("didSelect")
-                }
+            if let localId = assetEntitys[indexPath.item].localIdentifier {
+                selectedItems[localId] = indexPath
+                print("didSelect")
             }
         } else {
             collectionView.deselectItem(at: indexPath, animated: false)
@@ -221,12 +216,9 @@ extension PhotoListViewController: UICollectionViewDelegate {
     }
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         guard isEditing else { return }
-        if let selectCell = collectionView.cellForItem(at: indexPath) as? PhotoListViewCollectionViewCell {
-            selectCell.updateViewStatus(isSelect: false)
-            if let localId = assetEntitys[indexPath.item].localIdentifier {
-                selectedItems.removeValue(forKey: localId)
-                print("didDeselect")
-            }
+        if let localId = assetEntitys[indexPath.item].localIdentifier {
+            selectedItems.removeValue(forKey: localId)
+            print("didDeselect")
         }
     }
 }

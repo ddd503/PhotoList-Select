@@ -22,7 +22,7 @@ extension UIViewController {
             // すでに出ていたら消す
             frontView.removeFromSuperview()
         }
-        
+
         let finishView = FinishView.make()
         finishView.frame = CGRect(x: 0,
                                   y: 0,

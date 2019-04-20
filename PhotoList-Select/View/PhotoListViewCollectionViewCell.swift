@@ -27,6 +27,7 @@ final class PhotoListViewCollectionViewCell: UICollectionViewCell {
         photoImageView.image = nil
     }
 
+    // セルの選択状態に合わせてレイアウトを切り替え
     override var isSelected: Bool {
         didSet {
             selectingView.isHidden = !isSelected
@@ -45,13 +46,6 @@ final class PhotoListViewCollectionViewCell: UICollectionViewCell {
         } else {
             photoImageView.image = UIImage(named: "no_image")
         }
-    }
-
-    func updateViewStatus(isSelect: Bool) {
-//        selectingView.isHidden = !isSelect
-//        checkView.isHidden = !isSelect
-//        selectingView.isHidden = !isSelected
-//        checkView.isHidden = !isSelected
     }
 
 }
