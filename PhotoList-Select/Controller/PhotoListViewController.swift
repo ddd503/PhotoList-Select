@@ -146,6 +146,9 @@ final class PhotoListViewController: UIViewController {
         hiddenSelectedItems()
     }
 
+    // 任意のセルを選択した状態からパンをスタートしたか
+    private var isStartHasCheckBoxCell = false
+
     @objc private func didPan(toSelectCells panGesture: UIPanGestureRecognizer) {
         guard isEditing else { return }
 
@@ -153,6 +156,12 @@ final class PhotoListViewController: UIViewController {
         case .began:
             photoListView.isUserInteractionEnabled = false
             photoListView.isScrollEnabled = false
+            let location = panGesture.location(in: photoListView)
+            guard let currentIndexPath = photoListView.indexPathForItem(at: location),
+                let currentAssetLocalId = assetEntitys[currentIndexPath.item].localIdentifier else { return }
+            // 選択 or 非選択　どっちスタートか
+            isStartHasCheckBoxCell = selectedItems[currentAssetLocalId] != nil
+
         case .changed:
             let location = panGesture.location(in: photoListView)
 
@@ -162,51 +171,97 @@ final class PhotoListViewController: UIViewController {
 
             // 指を置いているセルが選択中か？
             let isSelectCurrentAsset = selectedItems[currentAssetLocalId] != nil
+            // 前に触っていたセルの選択状態を管理
             var isSelectPreviousAsset: Bool?
 
+            print("前に触っていたセルの処理")
             // 前に触っていたセルの処理
             if let lastPanIndexPath = lastPanIndexPath,
                 let previousAssetLocalId = assetEntitys[lastPanIndexPath.item].localIdentifier {
-                // セルが選択中か？
+                // 前に触ったセルが選択中か？
                 let isSelect = selectedItems[previousAssetLocalId] != nil
-                if isSelect, isSelectCurrentAsset {
-                    print("前のセルの選択外し")
-                    selectedItems.removeValue(forKey: previousAssetLocalId)
-                    photoListView.deselectItem(at: lastPanIndexPath, animated: false)
-                    isSelectPreviousAsset = false
+                if isSelect {
+                    // 前のセルは選択中
+                    if isSelectCurrentAsset {
+                        selectedItems.removeValue(forKey: previousAssetLocalId)
+                        photoListView.deselectItem(at: lastPanIndexPath, animated: false)
+                        isSelectPreviousAsset = false
+                        print("deselect")
+                    } else {
+                        selectedItems[previousAssetLocalId] = lastPanIndexPath
+                        // TODO: - 複数セル選択時に挙動を確認
+                        photoListView.selectItem(at: lastPanIndexPath, animated: false, scrollPosition: .bottom)
+                        isSelectPreviousAsset = true
+                        print("select")
+                    }
                 } else {
-                    print("前のセルをチェック")
-                    selectedItems[previousAssetLocalId] = lastPanIndexPath
-                    // TODO: - 複数セル選択時に挙動を確認
-                    photoListView.selectItem(at: lastPanIndexPath, animated: false, scrollPosition: .bottom)
-                    isSelectPreviousAsset = true
+                    // 前のセルは非選択中
+                    if isSelectCurrentAsset {
+                        selectedItems.removeValue(forKey: previousAssetLocalId)
+                        photoListView.deselectItem(at: lastPanIndexPath, animated: false)
+                        isSelectPreviousAsset = false
+                        print("deselect")
+                    } else {
+                        selectedItems[previousAssetLocalId] = lastPanIndexPath
+                        // TODO: - 複数セル選択時に挙動を確認
+                        photoListView.selectItem(at: lastPanIndexPath, animated: false, scrollPosition: .bottom)
+                        isSelectPreviousAsset = true
+                        print("select")
+                    }
                 }
             }
 
+            print("指を置いているセルの処理")
             // 指を置いているセルの処理
             if let isSelectPreviousAsset = isSelectPreviousAsset {
+                if isSelectPreviousAsset {
+                    if isSelectCurrentAsset {
+                        selectedItems.removeValue(forKey: currentAssetLocalId)
+                        photoListView.deselectItem(at: currentIndexPath, animated: false)
+                        print("deselect")
 
-                if isSelectCurrentAsset, isSelectPreviousAsset {
-                    print("今のセルの選択外し")
-                    selectedItems.removeValue(forKey: currentAssetLocalId)
-                    photoListView.deselectItem(at: currentIndexPath, animated: false)
+                    } else {
+                        selectedItems[currentAssetLocalId] = currentIndexPath
+                        // TODO: - 複数セル選択時に挙動を確認
+                        photoListView.selectItem(at: currentIndexPath, animated: false, scrollPosition: .bottom)
+                        print("select")
+                    }
                 } else {
-                    print("今のセルをチェック")
-                    selectedItems[currentAssetLocalId] = currentIndexPath
-                    // TODO: - 複数セル選択時に挙動を確認
-                    photoListView.selectItem(at: currentIndexPath, animated: false, scrollPosition: .bottom)
+                    if isStartHasCheckBoxCell {
+                        if isSelectCurrentAsset {
+                            selectedItems.removeValue(forKey: currentAssetLocalId)
+                            photoListView.deselectItem(at: currentIndexPath, animated: false)
+                            print("deselect")
+                        } else {
+                            selectedItems[currentAssetLocalId] = currentIndexPath
+                            // TODO: - 複数セル選択時に挙動を確認
+                            photoListView.selectItem(at: currentIndexPath, animated: false, scrollPosition: .bottom)
+                            print("select")
+                        }
+                    } else {
+                        if isSelectCurrentAsset {
+                            selectedItems[currentAssetLocalId] = currentIndexPath
+                            // TODO: - 複数セル選択時に挙動を確認
+                            photoListView.selectItem(at: currentIndexPath, animated: false, scrollPosition: .bottom)
+                            print("select")
+                        } else {
+                            selectedItems.removeValue(forKey: currentAssetLocalId)
+                            photoListView.deselectItem(at: currentIndexPath, animated: false)
+                            print("deselect")
+                        }
+                    }
                 }
             } else {
                 // ファーストタッチ時
                 if isSelectCurrentAsset {
-                    print("今のセルの選択外し")
                     selectedItems.removeValue(forKey: currentAssetLocalId)
                     photoListView.deselectItem(at: currentIndexPath, animated: false)
+                    print("deselect")
                 } else {
-                    print("今のセルをチェック")
                     selectedItems[currentAssetLocalId] = currentIndexPath
                     // TODO: - 複数セル選択時に挙動を確認
                     photoListView.selectItem(at: currentIndexPath, animated: false, scrollPosition: .bottom)
+                    print("select")
                 }
             }
 
@@ -242,6 +297,7 @@ extension PhotoListViewController: UICollectionViewDelegate {
         if isEditing {
             if let localId = assetEntitys[indexPath.item].localIdentifier {
                 selectedItems[localId] = indexPath
+                lastPanIndexPath = indexPath
             }
         } else {
             collectionView.deselectItem(at: indexPath, animated: false)
@@ -255,6 +311,7 @@ extension PhotoListViewController: UICollectionViewDelegate {
         guard isEditing else { return }
         if let localId = assetEntitys[indexPath.item].localIdentifier {
             selectedItems.removeValue(forKey: localId)
+            lastPanIndexPath = indexPath
         }
     }
 }
