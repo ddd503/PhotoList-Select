@@ -15,7 +15,7 @@ final class PhotoListViewController: UIViewController {
     private var assetEntitys = [AssetEntity]()
     // 選択されているセルを持つ
     private var selectedItems = [String: IndexPath]()
-    private var lastPanIndexPath = IndexPath()
+    private var lastPanIndexPath: IndexPath?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -157,22 +157,39 @@ final class PhotoListViewController: UIViewController {
             let location = panGesture.location(in: photoListView)
 
             if let indexPath: IndexPath = photoListView.indexPathForItem(at: location),
-                let localId = assetEntitys[indexPath.item].localIdentifier {
-
+                let currentAssetLocalId = assetEntitys[indexPath.item].localIdentifier {
                 guard lastPanIndexPath != indexPath else { return }
 
-                let isSelect = selectedItems[localId] != nil
+                let isSelectCurrentAsset = selectedItems[currentAssetLocalId] != nil
 
-                if isSelect {
-                    selectedItems.removeValue(forKey: localId)
-                    photoListView.deselectItem(at: indexPath, animated: false)
+                if let lastPanIndexPath = lastPanIndexPath,
+                    let previousAssetLocalId = assetEntitys[lastPanIndexPath.item].localIdentifier {
+                    let isSelectPreviousAsset = selectedItems[previousAssetLocalId] != nil
+                    if isSelectPreviousAsset, isSelectCurrentAsset {
+                        selectedItems.removeValue(forKey: previousAssetLocalId)
+                        photoListView.deselectItem(at: lastPanIndexPath, animated: false)
+                    }
+                    if isSelectCurrentAsset, !isSelectPreviousAsset {
+                        selectedItems.removeValue(forKey: currentAssetLocalId)
+                        photoListView.deselectItem(at: indexPath, animated: false)
+                    } else {
+                        selectedItems[currentAssetLocalId] = indexPath
+                        // TODO: - 複数セル選択時に挙動を確認
+                        photoListView.selectItem(at: indexPath, animated: false, scrollPosition: .bottom)
+                    }
                 } else {
-                    selectedItems[localId] = indexPath
-                    // TODO: - 複数セル選択時に挙動を確認
-                    photoListView.selectItem(at: indexPath, animated: false, scrollPosition: .bottom)
-                }
+                    // 初回ハンドル（lastPanIndexPathが存在しない）
+                    if isSelectCurrentAsset {
+                        selectedItems.removeValue(forKey: currentAssetLocalId)
+                        photoListView.deselectItem(at: indexPath, animated: false)
+                    } else {
+                        selectedItems[currentAssetLocalId] = indexPath
+                        // TODO: - 複数セル選択時に挙動を確認
+                        photoListView.selectItem(at: indexPath, animated: false, scrollPosition: .bottom)
+                    }
 
-                lastPanIndexPath = indexPath
+                }
+                self.lastPanIndexPath = indexPath
             }
         case .ended:
             photoListView.isScrollEnabled = true
@@ -204,7 +221,6 @@ extension PhotoListViewController: UICollectionViewDelegate {
         if isEditing {
             if let localId = assetEntitys[indexPath.item].localIdentifier {
                 selectedItems[localId] = indexPath
-                print("didSelect")
             }
         } else {
             collectionView.deselectItem(at: indexPath, animated: false)
@@ -218,7 +234,6 @@ extension PhotoListViewController: UICollectionViewDelegate {
         guard isEditing else { return }
         if let localId = assetEntitys[indexPath.item].localIdentifier {
             selectedItems.removeValue(forKey: localId)
-            print("didDeselect")
         }
     }
 }
