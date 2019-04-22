@@ -68,7 +68,7 @@ final class PhotoListViewController: UIViewController {
 
     private func setupPanGesture() {
         let gesture = UIPanGestureRecognizer(target: self, action: #selector(didPan(toSelectCells:)))
-        photoListView.addGestureRecognizer(gesture)
+        view.addGestureRecognizer(gesture)
     }
 
     private func prepareAssetEntitys() {

@@ -95,8 +95,13 @@ final class CoreDataStore {
         let fetchRequest = NSFetchRequest<AssetEntity>(entityName: "AssetEntity")
         fetchRequest.predicate = NSPredicate(format: "localIdentifier == %@", localId)
         fetchRequest.fetchLimit = 1
-        let assetEntity = try? context.fetch(fetchRequest).first
-        return assetEntity == nil
+        do {
+            let assetEntity = try context.fetch(fetchRequest).first
+            return assetEntity == nil
+        } catch {
+            // 取得に失敗 == 存在しない
+            return true
+        }
     }
 
 }

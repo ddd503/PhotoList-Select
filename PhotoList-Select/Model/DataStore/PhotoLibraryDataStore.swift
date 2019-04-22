@@ -15,7 +15,7 @@ final class PhotoLibraryDataStore {
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         let fetchResult = PHAsset.fetchAssets(with: .image, options: options)
         var assets = [PHAsset]()
-        fetchResult.enumerateObjects(options: NSEnumerationOptions.concurrent) { (asset, index, _) in
+        fetchResult.enumerateObjects { (asset, index, _) in
             assets.append(asset)
         }
         return assets
