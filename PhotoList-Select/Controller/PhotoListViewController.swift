@@ -212,6 +212,23 @@ final class PhotoListViewController: UIViewController {
             }
 
             print("指を置いているセルの処理")
+            if let lastPanIndexPath = lastPanIndexPath {
+                if currentIndexPath.item > lastPanIndexPath.item {
+                    // 上から下への移動（lastPanIndexPathは前の処理で別途選択されるから1足す）
+                    (lastPanIndexPath.item + 1..<currentIndexPath.item + 1).forEach {
+                        print($0)
+                        if let localId = assetEntitys[$0].localIdentifier {
+                            let indexPath = IndexPath(item: $0, section: 0)
+                            // TODO: - ここで指を置いているセルと同様の処理をする（判定のみ先にして、連続で選択処理をやる）
+                        }
+                    }
+                } else {
+                    // 下から上への移動（降順で欲しいからreversed）
+                    (currentIndexPath.item..<lastPanIndexPath.item).reversed().forEach {
+                        print($0)
+                    }
+                }
+            }
             // 指を置いているセルの処理
             if let isSelectPreviousAsset = isSelectPreviousAsset {
                 if isSelectPreviousAsset {
