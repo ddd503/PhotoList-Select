@@ -212,73 +212,20 @@ final class PhotoListViewController: UIViewController {
             }
 
             print("指を置いているセルの処理")
+            // 指を置いているセルの処理
             if let lastPanIndexPath = lastPanIndexPath {
                 if currentIndexPath.item > lastPanIndexPath.item {
                     // 上から下への移動（lastPanIndexPathは前の処理で別途選択されるから1足す）
                     (lastPanIndexPath.item + 1..<currentIndexPath.item + 1).forEach {
                         print($0)
-                        if let localId = assetEntitys[$0].localIdentifier {
-                            let indexPath = IndexPath(item: $0, section: 0)
-                            // TODO: - ここで指を置いているセルと同様の処理をする（判定のみ先にして、連続で選択処理をやる）
-                        }
+                        handleSwipeSelectForCurrent(isSelectPreviousAsset: isSelectPreviousAsset, isSelectCurrentAsset: isSelectCurrentAsset, item: $0)
                     }
                 } else {
                     // 下から上への移動（降順で欲しいからreversed）
                     (currentIndexPath.item..<lastPanIndexPath.item).reversed().forEach {
                         print($0)
+                        handleSwipeSelectForCurrent(isSelectPreviousAsset: isSelectPreviousAsset, isSelectCurrentAsset: isSelectCurrentAsset, item: $0)
                     }
-                }
-            }
-            // 指を置いているセルの処理
-            if let isSelectPreviousAsset = isSelectPreviousAsset {
-                if isSelectPreviousAsset {
-                    if isSelectCurrentAsset {
-                        selectedItems.removeValue(forKey: currentAssetLocalId)
-                        photoListView.deselectItem(at: currentIndexPath, animated: false)
-                        print("deselect")
-
-                    } else {
-                        selectedItems[currentAssetLocalId] = currentIndexPath
-                        // TODO: - 複数セル選択時に挙動を確認
-                        photoListView.selectItem(at: currentIndexPath, animated: false, scrollPosition: .bottom)
-                        print("select")
-                    }
-                } else {
-                    if isStartHasCheckBoxCell {
-                        if isSelectCurrentAsset {
-                            selectedItems.removeValue(forKey: currentAssetLocalId)
-                            photoListView.deselectItem(at: currentIndexPath, animated: false)
-                            print("deselect")
-                        } else {
-                            selectedItems[currentAssetLocalId] = currentIndexPath
-                            // TODO: - 複数セル選択時に挙動を確認
-                            photoListView.selectItem(at: currentIndexPath, animated: false, scrollPosition: .bottom)
-                            print("select")
-                        }
-                    } else {
-                        if isSelectCurrentAsset {
-                            selectedItems[currentAssetLocalId] = currentIndexPath
-                            // TODO: - 複数セル選択時に挙動を確認
-                            photoListView.selectItem(at: currentIndexPath, animated: false, scrollPosition: .bottom)
-                            print("select")
-                        } else {
-                            selectedItems.removeValue(forKey: currentAssetLocalId)
-                            photoListView.deselectItem(at: currentIndexPath, animated: false)
-                            print("deselect")
-                        }
-                    }
-                }
-            } else {
-                // ファーストタッチ時
-                if isSelectCurrentAsset {
-                    selectedItems.removeValue(forKey: currentAssetLocalId)
-                    photoListView.deselectItem(at: currentIndexPath, animated: false)
-                    print("deselect")
-                } else {
-                    selectedItems[currentAssetLocalId] = currentIndexPath
-                    // TODO: - 複数セル選択時に挙動を確認
-                    photoListView.selectItem(at: currentIndexPath, animated: false, scrollPosition: .bottom)
-                    print("select")
                 }
             }
 
@@ -291,6 +238,37 @@ final class PhotoListViewController: UIViewController {
         }
     }
 
+    private func handleSwipeSelectForCurrent(isSelectPreviousAsset: Bool?,
+                                             isSelectCurrentAsset: Bool,
+                                             item: Int) {
+        guard let assetLocalId = assetEntitys[item].localIdentifier else { return }
+
+        let currentIndexPath = IndexPath(item: item, section: 0)
+        let previous = isSelectPreviousAsset
+        let current = isSelectCurrentAsset
+        let start = isStartHasCheckBoxCell
+
+        switch (previous, current, start) {
+        case (nil, false, _),
+             (true, false, _),
+             (false, false, true),
+             (false, false, true),
+             (false, true, false):
+            print("select")
+            selectedItems[assetLocalId] = currentIndexPath
+            // TODO: - 複数セル選択時に挙動を確認
+            photoListView.selectItem(at: currentIndexPath, animated: false, scrollPosition: .bottom)
+        case (nil, true, _),
+             (true, true, _),
+             (false, true, true),
+             (false, true, true),
+             (false, false, false):
+            print("deselect")
+            selectedItems.removeValue(forKey: assetLocalId)
+            photoListView.deselectItem(at: currentIndexPath, animated: false)
+        default: break
+        }
+    }
 
 }
 
