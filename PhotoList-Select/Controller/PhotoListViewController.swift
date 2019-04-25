@@ -139,6 +139,8 @@ final class PhotoListViewController: UIViewController {
             }
         }
 
+        // 消す際に選択状態を戻す
+        selectedItems.forEach { photoListView.deselectItem(at: $0.value, animated: false) }
         photoListView.performBatchUpdates({
             photoListView.deleteItems(at: selectedItems.map { $0.value })
         }) { [weak self] (_) in
