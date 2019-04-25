@@ -211,25 +211,34 @@ final class PhotoListViewController: UIViewController {
                 }
             }
 
+            // TODO: 選択後、戻す場合の処理に問題がある
             print("指を置いているセルの処理")
             // 指を置いているセルの処理
-            if let lastPanIndexPath = lastPanIndexPath {
-                if currentIndexPath.item > lastPanIndexPath.item {
-                    // 上から下への移動（lastPanIndexPathは前の処理で別途選択されるから1足す）
-                    (lastPanIndexPath.item + 1..<currentIndexPath.item + 1).forEach {
-                        print($0)
-                        handleSwipeSelectForCurrent(isSelectPreviousAsset: isSelectPreviousAsset, isSelectCurrentAsset: isSelectCurrentAsset, item: $0)
-                    }
-                } else {
-                    // 下から上への移動（降順で欲しいからreversed）
-                    (currentIndexPath.item..<lastPanIndexPath.item).reversed().forEach {
-                        print($0)
-                        handleSwipeSelectForCurrent(isSelectPreviousAsset: isSelectPreviousAsset, isSelectCurrentAsset: isSelectCurrentAsset, item: $0)
-                    }
+            // nilの場合は同じセル内の指移動とみる（初回のみで次回は頭でguardしている）
+            let lastPanIndexPath = self.lastPanIndexPath ?? currentIndexPath
+
+            if (lastPanIndexPath.item == currentIndexPath.item) {
+                print("同じIndexPath内の移動")
+                // 同じIndexPath内の移動
+                handleSwipeSelectForCurrent(isSelectPreviousAsset: isSelectPreviousAsset, isSelectCurrentAsset: isSelectCurrentAsset, item: lastPanIndexPath.item)
+            } else if (currentIndexPath.item > lastPanIndexPath.item) {
+                print("昇順の移動")
+                // 昇順の移動（lastPanIndexPathは前の処理で別途選択されるから1足す）
+                (lastPanIndexPath.item + 1..<currentIndexPath.item + 1).forEach {
+                    print($0)
+                    handleSwipeSelectForCurrent(isSelectPreviousAsset: isSelectPreviousAsset, isSelectCurrentAsset: isSelectCurrentAsset, item: $0)
+                }
+            } else {
+                // 降順の移動（降順で欲しいからreversed）
+                print("降順の移動")
+                (currentIndexPath.item..<lastPanIndexPath.item).reversed().forEach {
+                    print($0)
+                    handleSwipeSelectForCurrent(isSelectPreviousAsset: isSelectPreviousAsset, isSelectCurrentAsset: isSelectCurrentAsset, item: $0)
                 }
             }
 
             self.lastPanIndexPath = currentIndexPath
+
         case .ended:
             photoListView.isScrollEnabled = true
             photoListView.isUserInteractionEnabled = true
@@ -252,8 +261,7 @@ final class PhotoListViewController: UIViewController {
         case (nil, false, _),
              (true, false, _),
              (false, false, true),
-             (false, false, true),
-             (false, true, false):
+             (false, false, true):
             print("select")
             selectedItems[assetLocalId] = currentIndexPath
             // TODO: - 複数セル選択時に挙動を確認
@@ -262,7 +270,8 @@ final class PhotoListViewController: UIViewController {
              (true, true, _),
              (false, true, true),
              (false, true, true),
-             (false, false, false):
+             (false, false, false),
+             (false, true, false):
             print("deselect")
             selectedItems.removeValue(forKey: assetLocalId)
             photoListView.deselectItem(at: currentIndexPath, animated: false)
