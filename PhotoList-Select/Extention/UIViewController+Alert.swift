@@ -17,6 +17,15 @@ extension UIViewController {
         self.present(alert, animated: true)
     }
 
+    func showReturnConfirmationAlert(title: String? = "確認", message: String? = nil, actionHandler: ((UIAlertAction) -> ())?) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let action = UIAlertAction(title: "OK", style: .default, handler: actionHandler)
+        let cancel = UIAlertAction(title: "キャンセル", style: .cancel, handler: nil)
+        alert.addAction(action)
+        alert.addAction(cancel)
+        self.present(alert, animated: true)
+    }
+
     func showFinishLabel() {
         if !self.view.subviews.isEmpty, let frontView = self.view.subviews.last as? FinishView {
             // すでに出ていたら消す

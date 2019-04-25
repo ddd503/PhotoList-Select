@@ -16,7 +16,10 @@ final class PhotoListViewController: UIViewController {
     // 選択されているセルを持つ
     private var selectedItems = [String: IndexPath]()
     private var lastPanIndexPath: IndexPath?
+    // 任意のセルを選択した状態からパンをスタートしたか
+    private var isStartHasCheckBoxCell = false
 
+    // MARK: Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
@@ -33,9 +36,10 @@ final class PhotoListViewController: UIViewController {
         setTrashButtonIsHidden(!editing)
     }
 
+    // MARK: Setup
     private func setup() {
         setupPhotoListView()
-        setupTrashButton()
+        setupNavigationBarButtonItem()
         setupPanGesture()
 
         PhotoLibraryDataStore.requestAuthorization { [weak self] (success) in
@@ -59,10 +63,12 @@ final class PhotoListViewController: UIViewController {
         photoListView.allowsMultipleSelection = true
     }
 
-    private func setupTrashButton() {
-        navigationItem.rightBarButtonItem = editButtonItem
-        let trushButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(didTapTrashButton))
-        navigationItem.leftBarButtonItem = trushButton
+    private func setupNavigationBarButtonItem() {
+        let resetButtonItem = UIBarButtonItem(title: "戻す", style: .plain, target: self, action: #selector(didTapResetButton))
+        navigationItem.rightBarButtonItems = [editButtonItem, resetButtonItem]
+
+        let trushButtonItem = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(didTapTrashButton))
+        navigationItem.leftBarButtonItem = trushButtonItem
         setTrashButtonIsHidden(true)
     }
 
@@ -77,8 +83,9 @@ final class PhotoListViewController: UIViewController {
         }
     }
 
+    // MARK: Private
     private func requestAssetEntitys() {
-        self.coreDataStore.fetchAllAssetEntity(completion: { [weak self] (result) in
+        self.coreDataStore.fetchAllIsNotHiddenAssetEntity(completion: { [weak self] (result) in
             switch result {
             case .success(let assetEntitys):
                 self?.assetEntitys = assetEntitys
@@ -90,7 +97,7 @@ final class PhotoListViewController: UIViewController {
     }
 
     private func deselectCell() {
-        (0...assetEntitys.count).forEach { [weak self] in
+        (0..<assetEntitys.count).forEach { [weak self] in
             let indexPath = IndexPath(item: $0, section: 0)
             self?.photoListView.deselectItem(at: indexPath, animated: false)
             self?.selectedItems = [:]
@@ -140,14 +147,31 @@ final class PhotoListViewController: UIViewController {
         }
     }
 
+    private func showAllItems(action: UIAlertAction) {
+        coreDataStore.fetchAllAssetEntity { [weak self] (result) in
+            switch result {
+            case .success(let assetEntitys):
+                self?.assetEntitys = assetEntitys
+                DispatchQueue.main.async {
+                    self?.photoListView.reloadData()
+                }
+            case .failure(let nserror):
+                print("元に戻す失敗")
+                print(nserror.localizedDescription)
+                self?.showAttentionAlert(title: "失敗", message: "画像の復元に失敗しました。")
+            }
+        }
+    }
+
     @objc private func didTapTrashButton() {
         // 選択数が0ならreturn
         guard !selectedItems.isEmpty else { return }
         hiddenSelectedItems()
     }
 
-    // 任意のセルを選択した状態からパンをスタートしたか
-    private var isStartHasCheckBoxCell = false
+    @objc private func didTapResetButton() {
+        showReturnConfirmationAlert(message: "削除した写真を復元します。よろしいですか？", actionHandler: showAllItems)
+    }
 
     @objc private func didPan(toSelectCells panGesture: UIPanGestureRecognizer) {
         guard isEditing else { return }

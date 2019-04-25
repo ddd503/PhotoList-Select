@@ -47,7 +47,7 @@ final class CoreDataStore {
         saveContext(context)
     }
 
-    func fetchAllAssetEntity(completion: @escaping (Result<[AssetEntity], NSError>) -> ()) {
+    func fetchAllIsNotHiddenAssetEntity(completion: @escaping (Result<[AssetEntity], NSError>) -> ()) {
         let context = persistentContainer.viewContext
 
         context.perform {
@@ -69,6 +69,47 @@ final class CoreDataStore {
                 print("取得失敗: \(error.localizedDescription)")
                 completion(.failure(error))
             }
+        }
+    }
+
+    func fetchAllAssetEntity(completion: @escaping (Result<[AssetEntity], NSError>) -> ()) {
+        let context = persistentContainer.viewContext
+
+        context.perform {
+            let fetchRequest = NSFetchRequest<AssetEntity>(entityName: "AssetEntity")
+            let sortDescriptor = NSSortDescriptor(key: "creationDate", ascending: true)
+            fetchRequest.sortDescriptors = [sortDescriptor]
+
+            let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
+                                                                      managedObjectContext: context,
+                                                                      sectionNameKeyPath: nil,
+                                                                      cacheName: nil)
+            do {
+                try fetchedResultsController.performFetch()
+                let fetchedObjects = (fetchedResultsController.fetchedObjects ?? []).compactMap { $0 }
+                completion(.success(fetchedObjects))
+
+                DispatchQueue.global(qos: .default).async { [weak self] in
+                    self?.organizeIsHiddenParam(fetchedObjects: fetchedObjects.filter { $0.isHidden == true }, context: context)
+                }
+            } catch let error as NSError {
+                print("取得失敗: \(error.localizedDescription)")
+                completion(.failure(error))
+            }
+        }
+    }
+
+    /// 全ての削除済みフラグを未削除に戻す
+    ///
+    /// - Parameter fetchedObjects: isHidden属性がtrueのAssetEntityの配列
+    /// - Parameter context: Entity情報を保持したContext
+    func organizeIsHiddenParam(fetchedObjects: [AssetEntity], context: NSManagedObjectContext) {
+        fetchedObjects.forEach {
+            $0.isHidden = false
+        }
+        // サブスレッドから呼ばれる可能性があるため
+        DispatchQueue.main.async { [weak self] in
+            self?.saveContext(context)
         }
     }
 
