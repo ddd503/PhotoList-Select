@@ -56,15 +56,15 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="HGa-bv-QGO">
-                                <rect key="frame" x="0.0" y="74" width="414" height="758"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="862"/>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="HGa-bv-QGO" firstAttribute="centerX" secondItem="NPv-ut-KDj" secondAttribute="centerX" id="7Iv-Ar-9rq"/>
                             <constraint firstItem="HGa-bv-QGO" firstAttribute="width" secondItem="NPv-ut-KDj" secondAttribute="width" id="To4-te-uDE"/>
-                            <constraint firstItem="HGa-bv-QGO" firstAttribute="top" secondItem="Iza-7d-ba4" secondAttribute="top" constant="30" id="e8u-Nx-O4E"/>
-                            <constraint firstItem="Iza-7d-ba4" firstAttribute="bottom" secondItem="HGa-bv-QGO" secondAttribute="bottom" constant="30" id="qYm-O3-5Yx"/>
+                            <constraint firstItem="HGa-bv-QGO" firstAttribute="top" secondItem="NPv-ut-KDj" secondAttribute="top" id="e8u-Nx-O4E"/>
+                            <constraint firstItem="Iza-7d-ba4" firstAttribute="bottom" secondItem="HGa-bv-QGO" secondAttribute="bottom" id="qYm-O3-5Yx"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Iza-7d-ba4"/>
                     </view>

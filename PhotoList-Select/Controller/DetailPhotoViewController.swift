@@ -23,6 +23,7 @@ final class DetailPhotoViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = asset?.creationDate?.string
         setupImage()
     }
 
