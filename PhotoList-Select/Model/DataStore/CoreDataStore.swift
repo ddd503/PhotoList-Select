@@ -47,7 +47,7 @@ final class CoreDataStore {
         saveContext(context)
     }
 
-    func fetchAllIsNotHiddenAssetEntity(completion: @escaping (Result<[AssetEntity], NSError>) -> ()) {
+    func fetchIsNotHiddenAssetEntitys(completion: @escaping (Result<[AssetEntity], NSError>) -> ()) {
         let context = persistentContainer.viewContext
 
         context.perform {

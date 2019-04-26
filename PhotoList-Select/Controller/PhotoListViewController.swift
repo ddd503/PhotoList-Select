@@ -91,7 +91,7 @@ final class PhotoListViewController: UIViewController {
 
     // MARK: Private
     private func requestAssetEntitys() {
-        self.coreDataStore.fetchAllIsNotHiddenAssetEntity(completion: { [weak self] (result) in
+        self.coreDataStore.fetchIsNotHiddenAssetEntitys(completion: { [weak self] (result) in
             switch result {
             case .success(let assetEntitys):
                 self?.assetEntitys = assetEntitys
@@ -161,15 +161,22 @@ final class PhotoListViewController: UIViewController {
             guard let self = self else { return }
             switch result {
             case .success(let assetEntitys):
+                let insertIndexs = assetEntitys.enumerated().compactMap { (offset: Int, element: AssetEntity)  -> IndexPath? in
+                    if element.isHidden {
+                        return IndexPath(item: offset, section: 0)
+                    } else {
+                        return nil
+                    }
+                }
                 self.assetEntitys = assetEntitys
-                DispatchQueue.main.async {
-                    self.photoListView.reloadData()
-                    self.showFinishLabel(actionType: .restore)
+                DispatchQueue.main.async { [weak self] in
+                    self?.photoListView.insertItems(at: insertIndexs)
+                    self?.showFinishLabel(actionType: .restore)
                 }
             case .failure(let nserror):
                 print("元に戻す失敗")
                 print(nserror.localizedDescription)
-                self.showAttentionAlert(title: "失敗", message: "画像の復元に失敗しました。")
+                self.showAttentionAlert(title: "失敗", message: "データの復元に失敗しました")
             }
         }
     }
