@@ -47,7 +47,7 @@ final class PhotoListViewController: UIViewController {
             }
             // ローカルから取得して永続化
             self.prepareAssetEntitys()
-            // 永続化した写真(AssetEntity)を全てfetch
+            // 永続化した写真(AssetEntity)をfetch
             self.requestAssetEntitys()
         }
     }
@@ -76,7 +76,7 @@ final class PhotoListViewController: UIViewController {
 
     private func prepareAssetEntitys() {
         PhotoLibraryDataStore.requestAssets().forEach {
-            self.coreDataStore.insertAssetEntity(with: $0)
+            coreDataStore.insertAssetEntity(with: $0)
         }
     }
 
@@ -208,21 +208,26 @@ final class PhotoListViewController: UIViewController {
 
             if (lastPanIndexPath.item == currentIndexPath.item) {
                 // 同じIndexPath内の移動
-                handleSwipeSelectForCurrent(isSelectPreviousAsset: isSelectPreviousAsset, isSelectCurrentAsset: isSelectCurrentAsset, item: lastPanIndexPath.item)
+                handleSwipeSelectForCurrent(isSelectPreviousAsset: isSelectPreviousAsset,
+                                            isSelectCurrentAsset: isSelectCurrentAsset,
+                                            item: lastPanIndexPath.item)
             } else if (currentIndexPath.item > lastPanIndexPath.item) {
                 // 昇順の移動（lastPanIndexPathは前の処理で別途選択されるから1足す）
                 (lastPanIndexPath.item + 1..<currentIndexPath.item + 1).forEach {
-                    print($0)
-                    handleSwipeSelectForCurrent(isSelectPreviousAsset: isSelectPreviousAsset, isSelectCurrentAsset: isSelectCurrentAsset, item: $0)
+                    handleSwipeSelectForCurrent(isSelectPreviousAsset: isSelectPreviousAsset,
+                                                isSelectCurrentAsset: isSelectCurrentAsset,
+                                                item: $0)
                 }
             } else {
                 // 降順の移動（降順で欲しいからreversed）
                 (currentIndexPath.item..<lastPanIndexPath.item).reversed().forEach {
-                    print($0)
-                    handleSwipeSelectForCurrent(isSelectPreviousAsset: isSelectPreviousAsset, isSelectCurrentAsset: isSelectCurrentAsset, item: $0)
+                    handleSwipeSelectForCurrent(isSelectPreviousAsset: isSelectPreviousAsset,
+                                                isSelectCurrentAsset: isSelectCurrentAsset,
+                                                item: $0)
                 }
             }
 
+            // 次の選択移動のために値を更新
             self.lastPanIndexPath = currentIndexPath
 
         case .ended:
@@ -244,15 +249,12 @@ final class PhotoListViewController: UIViewController {
         switch (isSelectPreviousAsset, isSelectCurrentAsset) {
         case (true, false), (false, false):
             selectedItems[assetLocalId] = lastPanIndexPath
-            // TODO: - 複数セル選択時に挙動を確認
             photoListView.selectItem(at: lastPanIndexPath, animated: false, scrollPosition: .centeredHorizontally)
             isSelectPreviousAsset = true
-            print("select")
         case (true, true), (false, true):
             selectedItems.removeValue(forKey: assetLocalId)
             photoListView.deselectItem(at: lastPanIndexPath, animated: false)
             isSelectPreviousAsset = false
-            print("deselect")
         default:
             print("isSelectPreviousAssetがnil")
         }
@@ -265,18 +267,13 @@ final class PhotoListViewController: UIViewController {
         guard let assetLocalId = assetEntitys[item].localIdentifier else { return }
 
         let currentIndexPath = IndexPath(item: item, section: 0)
-        let previous = isSelectPreviousAsset
-        let current = isSelectCurrentAsset
-        let start = isStartHasCheckBoxCell
 
-        switch (previous, current, start) {
+        switch (isSelectPreviousAsset, isSelectCurrentAsset, isStartHasCheckBoxCell) {
         case (nil, false, _),
              (true, false, _),
              (false, false, true),
              (false, false, true):
-            print("select")
             selectedItems[assetLocalId] = currentIndexPath
-            // TODO: - 複数セル選択時に挙動を確認
             photoListView.selectItem(at: currentIndexPath, animated: false, scrollPosition: .centeredHorizontally)
         case (nil, true, _),
              (true, true, _),
@@ -284,7 +281,6 @@ final class PhotoListViewController: UIViewController {
              (false, true, true),
              (false, false, false),
              (false, true, false):
-            print("deselect")
             selectedItems.removeValue(forKey: assetLocalId)
             photoListView.deselectItem(at: currentIndexPath, animated: false)
         default: break
