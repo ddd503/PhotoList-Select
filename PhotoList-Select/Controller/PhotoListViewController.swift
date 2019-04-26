@@ -138,12 +138,22 @@ final class PhotoListViewController: UIViewController {
 
         // 消す際に選択状態を戻す
         selectedItems.forEach { photoListView.deselectItem(at: $0.value, animated: false) }
+        
         photoListView.performBatchUpdates({
             photoListView.deleteItems(at: selectedItems.map { $0.value })
         }) { [weak self] (_) in
-            self?.selectedItems = [:]
-            self?.showFinishLabel()
+            guard let self = self else { return }
+            self.selectedItems = [:]
+            self.showFinishLabel()
         }
+    }
+
+    private func switchPhotoListIsScrollEnabled(by fingerPosition: CGPoint) {
+        let isScrollEnabled =
+            (photoListView.bounds.size.height * 0.2 > fingerPosition.y) ||
+            (photoListView.bounds.size.height * 0.8 < fingerPosition.y)
+        photoListView.isUserInteractionEnabled = isScrollEnabled
+        photoListView.isScrollEnabled = isScrollEnabled
     }
 
     private func showAllItems(action: UIAlertAction) {
@@ -186,6 +196,8 @@ final class PhotoListViewController: UIViewController {
             isStartHasCheckBoxCell = selectedItems[currentAssetLocalId] != nil
 
         case .changed:
+            switchPhotoListIsScrollEnabled(by: panGesture.location(in: view))
+
             let location = panGesture.location(in: photoListView)
 
             guard let currentIndexPath = photoListView.indexPathForItem(at: location),
