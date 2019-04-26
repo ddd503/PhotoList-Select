@@ -245,7 +245,7 @@ final class PhotoListViewController: UIViewController {
         case (true, false), (false, false):
             selectedItems[assetLocalId] = lastPanIndexPath
             // TODO: - 複数セル選択時に挙動を確認
-            photoListView.selectItem(at: lastPanIndexPath, animated: false, scrollPosition: .bottom)
+            photoListView.selectItem(at: lastPanIndexPath, animated: false, scrollPosition: .centeredHorizontally)
             isSelectPreviousAsset = true
             print("select")
         case (true, true), (false, true):
@@ -277,7 +277,7 @@ final class PhotoListViewController: UIViewController {
             print("select")
             selectedItems[assetLocalId] = currentIndexPath
             // TODO: - 複数セル選択時に挙動を確認
-            photoListView.selectItem(at: currentIndexPath, animated: false, scrollPosition: .bottom)
+            photoListView.selectItem(at: currentIndexPath, animated: false, scrollPosition: .centeredHorizontally)
         case (nil, true, _),
              (true, true, _),
              (false, true, true),

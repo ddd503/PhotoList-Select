@@ -25,6 +25,7 @@ final class PhotoListViewCollectionViewCell: UICollectionViewCell {
 
     override func prepareForReuse() {
         photoImageView.image = nil
+        isSelected = false
     }
 
     // セルの選択状態に合わせてレイアウトを切り替え
