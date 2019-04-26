@@ -107,6 +107,7 @@ final class PhotoListViewController: UIViewController {
             let indexPath = IndexPath(item: $0, section: 0)
             self?.photoListView.deselectItem(at: indexPath, animated: false)
             self?.selectedItems = [:]
+            self?.lastPanIndexPath = nil
         }
     }
 
@@ -162,11 +163,7 @@ final class PhotoListViewController: UIViewController {
             switch result {
             case .success(let assetEntitys):
                 let insertIndexs = assetEntitys.enumerated().compactMap { (offset: Int, element: AssetEntity)  -> IndexPath? in
-                    if element.isHidden {
-                        return IndexPath(item: offset, section: 0)
-                    } else {
-                        return nil
-                    }
+                    return element.isHidden ? IndexPath(item: offset, section: 0) : nil
                 }
                 self.assetEntitys = assetEntitys
                 DispatchQueue.main.async { [weak self] in
@@ -302,7 +299,6 @@ final class PhotoListViewController: UIViewController {
 
 extension PhotoListViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        // TODO: - セクション分けするときはここでfetchControllerをみる
         return assetEntitys.count
     }
 
@@ -320,7 +316,6 @@ extension PhotoListViewController: UICollectionViewDelegate {
         if isEditing {
             if let localId = assetEntitys[indexPath.item].localIdentifier {
                 selectedItems[localId] = indexPath
-                lastPanIndexPath = indexPath
             }
         } else {
             collectionView.deselectItem(at: indexPath, animated: false)
@@ -334,7 +329,6 @@ extension PhotoListViewController: UICollectionViewDelegate {
         guard isEditing else { return }
         if let localId = assetEntitys[indexPath.item].localIdentifier {
             selectedItems.removeValue(forKey: localId)
-            lastPanIndexPath = indexPath
         }
     }
 }
