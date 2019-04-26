@@ -11,6 +11,9 @@ import UIKit
 final class PhotoListViewController: UIViewController {
 
     @IBOutlet weak private var photoListView: UICollectionView!
+    @IBOutlet weak private var trashButton: UIBarButtonItem!
+    @IBOutlet weak private var redoButton: UIBarButtonItem!
+
     private let coreDataStore = CoreDataStore()
     private var assetEntitys = [AssetEntity]()
     // 選択されているセルを持つ
@@ -30,7 +33,18 @@ final class PhotoListViewController: UIViewController {
         if !editing {
             deselectCell()
         }
-        setTrashButtonIsHidden(!editing)
+        trashButton.isEnabled = editing
+        redoButton.isEnabled = !editing
+    }
+
+    // MARK: Action
+    @IBAction func didTapTrashButton(_ sender: UIBarButtonItem) {
+        guard !selectedItems.isEmpty else { return }
+        showConfirmationActionSheet(actionType: .delete, editDataCount: selectedItems.count, actionHandler: hiddenSelectedItems)
+    }
+
+    @IBAction func didTapRedoButton(_ sender: UIBarButtonItem) {
+        showConfirmationActionSheet(actionType: .restore, editDataCount: 0, actionHandler: showAllItems)
     }
 
     // MARK: Setup
@@ -61,12 +75,7 @@ final class PhotoListViewController: UIViewController {
     }
 
     private func setupNavigationBarButtonItem() {
-        let resetButtonItem = UIBarButtonItem(title: "戻す", style: .plain, target: self, action: #selector(didTapResetButton))
-        navigationItem.rightBarButtonItems = [editButtonItem, resetButtonItem]
-
-        let trushButtonItem = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(didTapTrashButton))
-        navigationItem.leftBarButtonItem = trushButtonItem
-        setTrashButtonIsHidden(true)
+        navigationItem.rightBarButtonItem = editButtonItem
     }
 
     private func setupPanGesture() {
@@ -101,17 +110,7 @@ final class PhotoListViewController: UIViewController {
         }
     }
 
-    private func setTrashButtonIsHidden(_ isHidden: Bool) {
-        if isHidden {
-            navigationItem.leftBarButtonItem?.isEnabled = false
-            navigationItem.leftBarButtonItem?.tintColor = .clear
-        } else {
-            navigationItem.leftBarButtonItem?.isEnabled = true
-            navigationItem.leftBarButtonItem?.tintColor = nil
-        }
-    }
-
-    private func hiddenSelectedItems() {
+    private func hiddenSelectedItems(action: UIAlertAction) {
         // DB側の値を更新
         selectedItems.forEach {
             coreDataStore.fetchAsset(by: $0.key, completion: { [weak self] (result) in
@@ -138,13 +137,14 @@ final class PhotoListViewController: UIViewController {
 
         // 消す際に選択状態を戻す
         selectedItems.forEach { photoListView.deselectItem(at: $0.value, animated: false) }
-        
+
         photoListView.performBatchUpdates({
             photoListView.deleteItems(at: selectedItems.map { $0.value })
         }) { [weak self] (_) in
             guard let self = self else { return }
             self.selectedItems = [:]
-            self.showFinishLabel()
+            self.showFinishLabel(actionType: .delete)
+            self.setEditing(false, animated: true)
         }
     }
 
@@ -158,28 +158,20 @@ final class PhotoListViewController: UIViewController {
 
     private func showAllItems(action: UIAlertAction) {
         coreDataStore.fetchAllAssetEntity { [weak self] (result) in
+            guard let self = self else { return }
             switch result {
             case .success(let assetEntitys):
-                self?.assetEntitys = assetEntitys
+                self.assetEntitys = assetEntitys
                 DispatchQueue.main.async {
-                    self?.photoListView.reloadData()
+                    self.photoListView.reloadData()
+                    self.showFinishLabel(actionType: .restore)
                 }
             case .failure(let nserror):
                 print("元に戻す失敗")
                 print(nserror.localizedDescription)
-                self?.showAttentionAlert(title: "失敗", message: "画像の復元に失敗しました。")
+                self.showAttentionAlert(title: "失敗", message: "画像の復元に失敗しました。")
             }
         }
-    }
-
-    @objc private func didTapTrashButton() {
-        // 選択数が0ならreturn
-        guard !selectedItems.isEmpty else { return }
-        hiddenSelectedItems()
-    }
-
-    @objc private func didTapResetButton() {
-        showReturnConfirmationAlert(message: "削除した写真を復元します。よろしいですか？", actionHandler: showAllItems)
     }
 
     @objc private func didPan(toSelectCells panGesture: UIPanGestureRecognizer) {

@@ -24,6 +24,22 @@
                                 <collectionViewLayout key="collectionViewLayout" id="Weh-Xg-ef5" customClass="PhotoListViewCollectionViewLayout" customModule="PhotoList_Select"/>
                                 <cells/>
                             </collectionView>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" alpha="0.94999999999999996" contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dSa-5I-EVy">
+                                <rect key="frame" x="0.0" y="769" width="414" height="44"/>
+                                <items>
+                                    <barButtonItem systemItem="redo" id="9Ju-dV-dTL">
+                                        <connections>
+                                            <action selector="didTapRedoButton:" destination="3WM-XG-sd7" id="aPL-L0-EbD"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="g9W-bo-kzD"/>
+                                    <barButtonItem enabled="NO" systemItem="trash" id="Y1h-RC-ZVC">
+                                        <connections>
+                                            <action selector="didTapTrashButton:" destination="3WM-XG-sd7" id="A9P-O0-MZ0"/>
+                                        </connections>
+                                    </barButtonItem>
+                                </items>
+                            </toolbar>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -31,6 +47,9 @@
                             <constraint firstItem="89o-4l-LgR" firstAttribute="trailing" secondItem="JLl-vV-rts" secondAttribute="trailing" id="7AG-TX-gBm"/>
                             <constraint firstItem="JLl-vV-rts" firstAttribute="leading" secondItem="89o-4l-LgR" secondAttribute="leading" id="L24-Ar-ymZ"/>
                             <constraint firstAttribute="bottom" secondItem="JLl-vV-rts" secondAttribute="bottom" id="hD1-Uf-74U"/>
+                            <constraint firstItem="dSa-5I-EVy" firstAttribute="width" secondItem="hea-MP-tbS" secondAttribute="width" id="jT4-LV-Xhy"/>
+                            <constraint firstItem="dSa-5I-EVy" firstAttribute="centerX" secondItem="89o-4l-LgR" secondAttribute="centerX" id="nn6-1g-UwT"/>
+                            <constraint firstItem="89o-4l-LgR" firstAttribute="bottom" secondItem="dSa-5I-EVy" secondAttribute="bottom" id="rPt-cX-cx6"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="89o-4l-LgR"/>
                     </view>
@@ -41,6 +60,8 @@
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="photoListView" destination="JLl-vV-rts" id="iF0-WF-kbD"/>
+                        <outlet property="redoButton" destination="9Ju-dV-dTL" id="3Ej-ej-gWA"/>
+                        <outlet property="trashButton" destination="Y1h-RC-ZVC" id="PGy-Sd-69R"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uuK-81-wNE" userLabel="First Responder" sceneMemberID="firstResponder"/>

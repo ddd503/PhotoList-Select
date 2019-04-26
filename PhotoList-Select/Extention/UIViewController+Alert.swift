@@ -8,6 +8,28 @@
 
 import UIKit
 
+enum EditActionType {
+    case delete, restore
+
+    func actionTitle(editDataCount: Int) -> String {
+        switch self {
+        case .delete:
+            return "\(editDataCount)項目を削除"
+        case .restore:
+            return "すべての写真を復元"
+        }
+    }
+
+    var finishMessage: String {
+        switch self {
+        case .delete:
+            return "削除が完了しました"
+        case .restore:
+            return "復元が完了しました"
+        }
+    }
+}
+
 extension UIViewController {
 
     func showAttentionAlert(title: String? = "注意", message: String? = nil) {
@@ -17,16 +39,18 @@ extension UIViewController {
         self.present(alert, animated: true)
     }
 
-    func showReturnConfirmationAlert(title: String? = "確認", message: String? = nil, actionHandler: ((UIAlertAction) -> ())?) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let action = UIAlertAction(title: "OK", style: .default, handler: actionHandler)
+    func showConfirmationActionSheet(actionType: EditActionType, editDataCount: Int, actionHandler: ((UIAlertAction) -> ())?) {
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let action = UIAlertAction(title: actionType.actionTitle(editDataCount: editDataCount),
+                                   style: .destructive,
+                                   handler: actionHandler)
         let cancel = UIAlertAction(title: "キャンセル", style: .cancel, handler: nil)
-        alert.addAction(action)
-        alert.addAction(cancel)
-        self.present(alert, animated: true)
+        actionSheet.addAction(action)
+        actionSheet.addAction(cancel)
+        self.present(actionSheet, animated: true)
     }
 
-    func showFinishLabel() {
+    func showFinishLabel(actionType: EditActionType) {
         if !self.view.subviews.isEmpty, let frontView = self.view.subviews.last as? FinishView {
             // すでに出ていたら消す
             frontView.removeFromSuperview()
@@ -37,11 +61,11 @@ extension UIViewController {
                                   y: 0,
                                   width: self.view.bounds.size.width * 0.8,
                                   height: self.view.bounds.size.height * 0.08)
-        finishView.messageLabel.text = "削除が完了しました。"
+        finishView.messageLabel.text = actionType.finishMessage
         finishView.isHidden = true
         finishView.alpha = 0.0
         finishView.center.x = self.view.center.x
-        finishView.center.y = self.view.center.y * 1.8
+        finishView.center.y = self.view.center.y * 1.7
         self.view.addSubview(finishView)
 
         UIView.animateKeyframes(withDuration: 6.0, delay: 0.3, options: [], animations: {
