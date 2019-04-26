@@ -23,9 +23,6 @@ final class PhotoListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
-
-        //        let documentDirPath = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true)
-        //        print(documentDirPath)
     }
 
     override func setEditing(_ editing: Bool, animated: Bool) {
@@ -200,55 +197,19 @@ final class PhotoListViewController: UIViewController {
             // 前に触っていたセルの選択状態を管理
             var isSelectPreviousAsset: Bool?
 
-            print("前に触っていたセルの処理")
             // 前に触っていたセルの処理
-            if let lastPanIndexPath = lastPanIndexPath,
-                let previousAssetLocalId = assetEntitys[lastPanIndexPath.item].localIdentifier {
-                // 前に触ったセルが選択中か？
-                let isSelect = selectedItems[previousAssetLocalId] != nil
-                if isSelect {
-                    // 前のセルは選択中
-                    if isSelectCurrentAsset {
-                        selectedItems.removeValue(forKey: previousAssetLocalId)
-                        photoListView.deselectItem(at: lastPanIndexPath, animated: false)
-                        isSelectPreviousAsset = false
-                        print("deselect")
-                    } else {
-                        selectedItems[previousAssetLocalId] = lastPanIndexPath
-                        // TODO: - 複数セル選択時に挙動を確認
-                        photoListView.selectItem(at: lastPanIndexPath, animated: false, scrollPosition: .bottom)
-                        isSelectPreviousAsset = true
-                        print("select")
-                    }
-                } else {
-                    // 前のセルは非選択中
-                    if isSelectCurrentAsset {
-                        selectedItems.removeValue(forKey: previousAssetLocalId)
-                        photoListView.deselectItem(at: lastPanIndexPath, animated: false)
-                        isSelectPreviousAsset = false
-                        print("deselect")
-                    } else {
-                        selectedItems[previousAssetLocalId] = lastPanIndexPath
-                        // TODO: - 複数セル選択時に挙動を確認
-                        photoListView.selectItem(at: lastPanIndexPath, animated: false, scrollPosition: .bottom)
-                        isSelectPreviousAsset = true
-                        print("select")
-                    }
-                }
-            }
+            handleSwipeSlectForPrevious(isSelectPreviousAsset: &isSelectPreviousAsset,
+                                        isSelectCurrentAsset: isSelectCurrentAsset,
+                                        lastPanIndexPath: lastPanIndexPath)
 
-            // TODO: 選択後、戻す場合の処理に問題がある
-            print("指を置いているセルの処理")
             // 指を置いているセルの処理
             // nilの場合は同じセル内の指移動とみる（初回のみで次回は頭でguardしている）
             let lastPanIndexPath = self.lastPanIndexPath ?? currentIndexPath
 
             if (lastPanIndexPath.item == currentIndexPath.item) {
-                print("同じIndexPath内の移動")
                 // 同じIndexPath内の移動
                 handleSwipeSelectForCurrent(isSelectPreviousAsset: isSelectPreviousAsset, isSelectCurrentAsset: isSelectCurrentAsset, item: lastPanIndexPath.item)
             } else if (currentIndexPath.item > lastPanIndexPath.item) {
-                print("昇順の移動")
                 // 昇順の移動（lastPanIndexPathは前の処理で別途選択されるから1足す）
                 (lastPanIndexPath.item + 1..<currentIndexPath.item + 1).forEach {
                     print($0)
@@ -256,7 +217,6 @@ final class PhotoListViewController: UIViewController {
                 }
             } else {
                 // 降順の移動（降順で欲しいからreversed）
-                print("降順の移動")
                 (currentIndexPath.item..<lastPanIndexPath.item).reversed().forEach {
                     print($0)
                     handleSwipeSelectForCurrent(isSelectPreviousAsset: isSelectPreviousAsset, isSelectCurrentAsset: isSelectCurrentAsset, item: $0)
@@ -271,6 +231,32 @@ final class PhotoListViewController: UIViewController {
             lastPanIndexPath = nil
         default: break
         }
+    }
+
+    private func handleSwipeSlectForPrevious(isSelectPreviousAsset: inout Bool?,
+                                             isSelectCurrentAsset: Bool,
+                                             lastPanIndexPath: IndexPath?) {
+        guard let lastPanIndexPath = lastPanIndexPath,
+            let assetLocalId = assetEntitys[lastPanIndexPath.item].localIdentifier else { return }
+
+        isSelectPreviousAsset = selectedItems[assetLocalId] != nil
+
+        switch (isSelectPreviousAsset, isSelectCurrentAsset) {
+        case (true, false), (false, false):
+            selectedItems[assetLocalId] = lastPanIndexPath
+            // TODO: - 複数セル選択時に挙動を確認
+            photoListView.selectItem(at: lastPanIndexPath, animated: false, scrollPosition: .bottom)
+            isSelectPreviousAsset = true
+            print("select")
+        case (true, true), (false, true):
+            selectedItems.removeValue(forKey: assetLocalId)
+            photoListView.deselectItem(at: lastPanIndexPath, animated: false)
+            isSelectPreviousAsset = false
+            print("deselect")
+        default:
+            print("isSelectPreviousAssetがnil")
+        }
+
     }
 
     private func handleSwipeSelectForCurrent(isSelectPreviousAsset: Bool?,
