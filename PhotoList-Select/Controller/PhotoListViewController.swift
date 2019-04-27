@@ -18,9 +18,12 @@ final class PhotoListViewController: UIViewController {
     private var assetEntitys = [AssetEntity]()
     // 選択されているセルを持つ
     private var selectedItems = [String: IndexPath]()
+    private var startPanIndexPath: IndexPath?
     private var lastPanIndexPath: IndexPath?
     // 任意のセルを選択した状態からパンをスタートしたか
-    private var isStartHasCheckBoxCell = false
+    private var isStartSelectedCell = false
+    // Panを開始したセルからどれだけのitem数離れているかを保持
+    private var currentCountAwayFromStartPanItem = 0
 
     // MARK: Life Cycle
     override func viewDidLoad() {
@@ -151,8 +154,7 @@ final class PhotoListViewController: UIViewController {
 
     private func switchPhotoListIsScrollEnabled(by fingerPosition: CGPoint) {
         let isScrollEnabled =
-            (photoListView.bounds.size.height * 0.2 > fingerPosition.y) ||
-            (photoListView.bounds.size.height * 0.8 < fingerPosition.y)
+            (photoListView.bounds.size.height * 0.2 > fingerPosition.y) || (photoListView.bounds.size.height * 0.8 < fingerPosition.y)
         photoListView.isUserInteractionEnabled = isScrollEnabled
         photoListView.isScrollEnabled = isScrollEnabled
     }
@@ -178,119 +180,126 @@ final class PhotoListViewController: UIViewController {
         }
     }
 
+    private func isAwayFromStartPanItem(at indexPath: IndexPath) -> Bool {
+        guard let startPanIndexPath = startPanIndexPath else {
+            // 開始時のIndexPathが取れない（ありえない想定）
+            return false
+        }
+
+        let awayCount = abs(startPanIndexPath.item - indexPath.item)
+        let isAwayFromStart = awayCount > currentCountAwayFromStartPanItem
+        currentCountAwayFromStartPanItem = awayCount
+        return isAwayFromStart
+    }
+
+    private func isSelectCell(by indexPath: IndexPath) -> Bool {
+        guard let localId = assetEntitys[indexPath.item].localIdentifier else {
+            fatalError("localId does not exist, but it does not assume")
+        }
+        return selectedItems[localId] != nil
+    }
+
+    private func selectItems(at indexPaths: [IndexPath]) {
+        indexPaths.forEach {
+            guard let localId = assetEntitys[$0.item].localIdentifier else {
+                print("not found localId")
+                return
+            }
+            selectedItems[localId] = $0
+            photoListView.selectItem(at: $0, animated: false, scrollPosition: .centeredHorizontally)
+        }
+    }
+
+    private func deselectItems(at indexPaths: [IndexPath]) {
+        indexPaths.forEach {
+            guard let localId = assetEntitys[$0.item].localIdentifier else {
+                print("not found localId")
+                return
+            }
+            selectedItems.removeValue(forKey: localId)
+            photoListView.deselectItem(at: $0, animated: false)
+        }
+    }
+
+    private func operationIndexs(between currentIndex: IndexPath, _ previousIndex: IndexPath?) -> [IndexPath] {
+        guard currentIndex != previousIndex, let previousIndex = previousIndex else { return [currentIndex] }
+        // 今回はsctionで分かれている場合は考慮しない
+        let isLargeCurrent = currentIndex.item > previousIndex.item
+
+        if isLargeCurrent {
+            // 昇順
+            return (previousIndex.item...currentIndex.item).map {
+                IndexPath(item: $0, section: 0)
+            }
+        } else {
+            // 降順
+            return (currentIndex.item...previousIndex.item).reversed().map {
+                IndexPath(item: $0, section: 0)
+            }
+        }
+    }
+
     @objc private func didPan(toSelectCells panGesture: UIPanGestureRecognizer) {
         guard isEditing else { return }
+
+        let location = panGesture.location(in: photoListView)
+
+        guard let currentIndexPath = photoListView.indexPathForItem(at: location) else {
+            print("ジェスチャー開始時のタッチ位置状態が取れません")
+            return
+        }
 
         switch panGesture.state {
         case .began:
             photoListView.isUserInteractionEnabled = false
             photoListView.isScrollEnabled = false
-            let location = panGesture.location(in: photoListView)
-            guard let currentIndexPath = photoListView.indexPathForItem(at: location),
-                let currentAssetLocalId = assetEntitys[currentIndexPath.item].localIdentifier else { return }
-            // 選択 or 非選択　どっちスタートか
-            isStartHasCheckBoxCell = selectedItems[currentAssetLocalId] != nil
-
+            isStartSelectedCell = isSelectCell(by: currentIndexPath)
+            startPanIndexPath = currentIndexPath
         case .changed:
+            // Pan位置によってスクロールの有無の切り替える
             switchPhotoListIsScrollEnabled(by: panGesture.location(in: view))
 
-            let location = panGesture.location(in: photoListView)
+            // 一度処理したセルならリターン
+            guard lastPanIndexPath != currentIndexPath else { return }
 
-            guard let currentIndexPath = photoListView.indexPathForItem(at: location),
-                let currentAssetLocalId = assetEntitys[currentIndexPath.item].localIdentifier,
-                lastPanIndexPath != currentIndexPath else { return }
-
-            // 指を置いているセルが選択中か？
-            let isSelectCurrentAsset = selectedItems[currentAssetLocalId] != nil
-            // 前に触っていたセルの選択状態を管理
-            var isSelectPreviousAsset: Bool?
-
-            // 前に触っていたセルの処理
-            handleSwipeSlectForPrevious(isSelectPreviousAsset: &isSelectPreviousAsset,
-                                        isSelectCurrentAsset: isSelectCurrentAsset,
-                                        lastPanIndexPath: lastPanIndexPath)
-
-            // 指を置いているセルの処理
-            // nilの場合は同じセル内の指移動とみる（初回のみで次回は頭でguardしている）
-            let lastPanIndexPath = self.lastPanIndexPath ?? currentIndexPath
-
-            if (lastPanIndexPath.item == currentIndexPath.item) {
-                // 同じIndexPath内の移動
-                handleSwipeSelectForCurrent(isSelectPreviousAsset: isSelectPreviousAsset,
-                                            isSelectCurrentAsset: isSelectCurrentAsset,
-                                            item: lastPanIndexPath.item)
-            } else if (currentIndexPath.item > lastPanIndexPath.item) {
-                // 昇順の移動（lastPanIndexPathは前の処理で別途選択されるから1足す）
-                (lastPanIndexPath.item + 1..<currentIndexPath.item + 1).forEach {
-                    handleSwipeSelectForCurrent(isSelectPreviousAsset: isSelectPreviousAsset,
-                                                isSelectCurrentAsset: isSelectCurrentAsset,
-                                                item: $0)
-                }
+            if isStartSelectedCell {
+                deselectItems(at: operationIndexs(between: currentIndexPath, lastPanIndexPath))
             } else {
-                // 降順の移動（降順で欲しいからreversed）
-                (currentIndexPath.item..<lastPanIndexPath.item).reversed().forEach {
-                    handleSwipeSelectForCurrent(isSelectPreviousAsset: isSelectPreviousAsset,
-                                                isSelectCurrentAsset: isSelectCurrentAsset,
-                                                item: $0)
+                let indexs = operationIndexs(between: currentIndexPath, lastPanIndexPath)
+                guard !indexs.isEmpty else { return }
+                var oldIndexPath = indexs[0] // 初期値は最初に触ったセル
+
+                indexs.forEach {
+                    // 対象IndexPathの状態操作
+                    if isSelectCell(by: $0) {
+                        deselectItems(at: [$0])
+                    } else {
+                        selectItems(at: [$0])
+                    }
+                    // 対象IndexPathの一つ前のIndexPathへの状態操作
+                    let isAwayFromStartCell = isAwayFromStartPanItem(at: $0)
+
+                    switch (isStartSelectedCell, isAwayFromStartCell) {
+                    case (false, true):
+                        selectItems(at: [oldIndexPath])
+                    case (false, false):
+                        deselectItems(at: [oldIndexPath])
+                    case (true, true):
+                        deselectItems(at: [oldIndexPath])
+                    case (true, false):
+                        selectItems(at: [oldIndexPath])
+                    }
+                    // 操作IndexPathを更新
+                    oldIndexPath = $0
                 }
             }
-
             // 次の選択移動のために値を更新
             self.lastPanIndexPath = currentIndexPath
-
         case .ended:
             photoListView.isScrollEnabled = true
             photoListView.isUserInteractionEnabled = true
             lastPanIndexPath = nil
-        default: break
-        }
-    }
-
-    private func handleSwipeSlectForPrevious(isSelectPreviousAsset: inout Bool?,
-                                             isSelectCurrentAsset: Bool,
-                                             lastPanIndexPath: IndexPath?) {
-        guard let lastPanIndexPath = lastPanIndexPath,
-            let assetLocalId = assetEntitys[lastPanIndexPath.item].localIdentifier else { return }
-
-        isSelectPreviousAsset = selectedItems[assetLocalId] != nil
-
-        switch (isSelectPreviousAsset, isSelectCurrentAsset) {
-        case (true, false), (false, false):
-            selectedItems[assetLocalId] = lastPanIndexPath
-            photoListView.selectItem(at: lastPanIndexPath, animated: false, scrollPosition: .centeredHorizontally)
-            isSelectPreviousAsset = true
-        case (true, true), (false, true):
-            selectedItems.removeValue(forKey: assetLocalId)
-            photoListView.deselectItem(at: lastPanIndexPath, animated: false)
-            isSelectPreviousAsset = false
-        default:
-            print("isSelectPreviousAssetがnil")
-        }
-
-    }
-
-    private func handleSwipeSelectForCurrent(isSelectPreviousAsset: Bool?,
-                                             isSelectCurrentAsset: Bool,
-                                             item: Int) {
-        guard let assetLocalId = assetEntitys[item].localIdentifier else { return }
-
-        let currentIndexPath = IndexPath(item: item, section: 0)
-
-        switch (isSelectPreviousAsset, isSelectCurrentAsset, isStartHasCheckBoxCell) {
-        case (nil, false, _),
-             (true, false, _),
-             (false, false, true),
-             (false, false, true):
-            selectedItems[assetLocalId] = currentIndexPath
-            photoListView.selectItem(at: currentIndexPath, animated: false, scrollPosition: .centeredHorizontally)
-        case (nil, true, _),
-             (true, true, _),
-             (false, true, true),
-             (false, true, true),
-             (false, false, false),
-             (false, true, false):
-            selectedItems.removeValue(forKey: assetLocalId)
-            photoListView.deselectItem(at: currentIndexPath, animated: false)
+            startPanIndexPath = nil
         default: break
         }
     }
