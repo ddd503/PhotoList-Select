@@ -15,7 +15,6 @@
 		45FAFB11226180F30034E913 /* PhotoList_Select.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 45FAFB0F226180F30034E913 /* PhotoList_Select.xcdatamodeld */; };
 		45FAFB13226180F40034E913 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 45FAFB12226180F40034E913 /* Assets.xcassets */; };
 		45FAFB16226180F40034E913 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45FAFB14226180F40034E913 /* LaunchScreen.storyboard */; };
-		45FAFB21226180F40034E913 /* PhotoList_SelectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FAFB20226180F40034E913 /* PhotoList_SelectTests.swift */; };
 		45FAFB30226181F20034E913 /* PhotoListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FAFB2F226181F20034E913 /* PhotoListViewController.swift */; };
 		45FAFB32226181FA0034E913 /* PhotoListViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45FAFB31226181FA0034E913 /* PhotoListViewController.storyboard */; };
 		45FAFB3622618A200034E913 /* PhotoLibraryDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FAFB3522618A200034E913 /* PhotoLibraryDataStore.swift */; };
@@ -25,16 +24,6 @@
 		45FAFB3E22618C1A0034E913 /* PhotoListViewCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45FAFB3C22618C1A0034E913 /* PhotoListViewCollectionViewCell.xib */; };
 		45FAFB41226190D10034E913 /* UIViewController+Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FAFB40226190D10034E913 /* UIViewController+Alert.swift */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		45FAFB1D226180F40034E913 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 45FAFAFD226180F30034E913 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 45FAFB04226180F30034E913;
-			remoteInfo = "PhotoList-Select";
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		45C9BA9A226B235000019C91 /* DetailPhotoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailPhotoViewController.swift; sourceTree = "<group>"; };
@@ -47,9 +36,6 @@
 		45FAFB12226180F40034E913 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		45FAFB15226180F40034E913 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		45FAFB17226180F40034E913 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		45FAFB1C226180F40034E913 /* PhotoList-SelectTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "PhotoList-SelectTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		45FAFB20226180F40034E913 /* PhotoList_SelectTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoList_SelectTests.swift; sourceTree = "<group>"; };
-		45FAFB22226180F40034E913 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		45FAFB2F226181F20034E913 /* PhotoListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoListViewController.swift; sourceTree = "<group>"; };
 		45FAFB31226181FA0034E913 /* PhotoListViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = PhotoListViewController.storyboard; sourceTree = "<group>"; };
 		45FAFB3522618A200034E913 /* PhotoLibraryDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryDataStore.swift; sourceTree = "<group>"; };
@@ -68,13 +54,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		45FAFB19226180F40034E913 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -82,7 +61,6 @@
 			isa = PBXGroup;
 			children = (
 				45FAFB07226180F30034E913 /* PhotoList-Select */,
-				45FAFB1F226180F40034E913 /* PhotoList-SelectTests */,
 				45FAFB06226180F30034E913 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -91,7 +69,6 @@
 			isa = PBXGroup;
 			children = (
 				45FAFB05226180F30034E913 /* PhotoList-Select.app */,
-				45FAFB1C226180F40034E913 /* PhotoList-SelectTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -106,15 +83,6 @@
 				45FAFB2B226181720034E913 /* Other */,
 			);
 			path = "PhotoList-Select";
-			sourceTree = "<group>";
-		};
-		45FAFB1F226180F40034E913 /* PhotoList-SelectTests */ = {
-			isa = PBXGroup;
-			children = (
-				45FAFB20226180F40034E913 /* PhotoList_SelectTests.swift */,
-				45FAFB22226180F40034E913 /* Info.plist */,
-			);
-			path = "PhotoList-SelectTests";
 			sourceTree = "<group>";
 		};
 		45FAFB2B226181720034E913 /* Other */ = {
@@ -205,24 +173,6 @@
 			productReference = 45FAFB05226180F30034E913 /* PhotoList-Select.app */;
 			productType = "com.apple.product-type.application";
 		};
-		45FAFB1B226180F40034E913 /* PhotoList-SelectTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 45FAFB28226180F40034E913 /* Build configuration list for PBXNativeTarget "PhotoList-SelectTests" */;
-			buildPhases = (
-				45FAFB18226180F40034E913 /* Sources */,
-				45FAFB19226180F40034E913 /* Frameworks */,
-				45FAFB1A226180F40034E913 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				45FAFB1E226180F40034E913 /* PBXTargetDependency */,
-			);
-			name = "PhotoList-SelectTests";
-			productName = "PhotoList-SelectTests";
-			productReference = 45FAFB1C226180F40034E913 /* PhotoList-SelectTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -235,10 +185,6 @@
 				TargetAttributes = {
 					45FAFB04226180F30034E913 = {
 						CreatedOnToolsVersion = 10.2;
-					};
-					45FAFB1B226180F40034E913 = {
-						CreatedOnToolsVersion = 10.2;
-						TestTargetID = 45FAFB04226180F30034E913;
 					};
 				};
 			};
@@ -256,7 +202,6 @@
 			projectRoot = "";
 			targets = (
 				45FAFB04226180F30034E913 /* PhotoList-Select */,
-				45FAFB1B226180F40034E913 /* PhotoList-SelectTests */,
 			);
 		};
 /* End PBXProject section */
@@ -271,13 +216,6 @@
 				45FAFB16226180F40034E913 /* LaunchScreen.storyboard in Resources */,
 				45FAFB13226180F40034E913 /* Assets.xcassets in Resources */,
 				45FAFB32226181FA0034E913 /* PhotoListViewController.storyboard in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		45FAFB1A226180F40034E913 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -302,23 +240,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		45FAFB18226180F40034E913 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				45FAFB21226180F40034E913 /* PhotoList_SelectTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		45FAFB1E226180F40034E913 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 45FAFB04226180F30034E913 /* PhotoList-Select */;
-			targetProxy = 45FAFB1D226180F40034E913 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		45FAFB14226180F40034E913 /* LaunchScreen.storyboard */ = {
@@ -484,48 +406,6 @@
 			};
 			name = Release;
 		};
-		45FAFB29226180F40034E913 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = LVR5UQEHBD;
-				INFOPLIST_FILE = "PhotoList-SelectTests/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.kawahara.PhotoList-SelectTests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PhotoList-Select.app/PhotoList-Select";
-			};
-			name = Debug;
-		};
-		45FAFB2A226180F40034E913 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = LVR5UQEHBD;
-				INFOPLIST_FILE = "PhotoList-SelectTests/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.kawahara.PhotoList-SelectTests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PhotoList-Select.app/PhotoList-Select";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -543,15 +423,6 @@
 			buildConfigurations = (
 				45FAFB26226180F40034E913 /* Debug */,
 				45FAFB27226180F40034E913 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		45FAFB28226180F40034E913 /* Build configuration list for PBXNativeTarget "PhotoList-SelectTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				45FAFB29226180F40034E913 /* Debug */,
-				45FAFB2A226180F40034E913 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

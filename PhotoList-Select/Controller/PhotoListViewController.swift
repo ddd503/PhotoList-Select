@@ -185,7 +185,6 @@ final class PhotoListViewController: UIViewController {
             // 開始時のIndexPathが取れない（ありえない想定）
             return false
         }
-
         let awayCount = abs(startPanIndexPath.item - indexPath.item)
         let isAwayFromStart = awayCount > currentCountAwayFromStartPanItem
         currentCountAwayFromStartPanItem = awayCount
