@@ -239,6 +239,37 @@ final class PhotoListViewController: UIViewController {
         }
     }
 
+    private func handlePanGestureForSelectCell(at indexs: [IndexPath]) {
+        guard !indexs.isEmpty else { return }
+        var oldIndexPath = indexs[0] // 初期値は最初に触ったセル
+
+        indexs.forEach {
+            // 対象IndexPathの状態操作（deselectが必要なパターンはisStartSelectedCellの判定でtrueに入る）
+            if !isSelectCell(by: $0) {
+                selectItems(at: [$0])
+            }
+
+            // 操作対象のIndexPathの配列の要素数が1の場合は以降の処理は必要ない（してはいけない）
+            guard indexs.count > 1 else { return }
+
+            // 対象IndexPathの一つ前のIndexPathへの状態操作
+            let isAwayFromStartCell = isAwayFromStartPanItem(at: $0)
+
+            switch (isStartSelectedCell, isAwayFromStartCell) {
+            case (false, true):
+                selectItems(at: [oldIndexPath])
+            case (false, false):
+                deselectItems(at: [oldIndexPath])
+            case (true, true):
+                deselectItems(at: [oldIndexPath])
+            case (true, false):
+                selectItems(at: [oldIndexPath])
+            }
+            // 操作IndexPathを更新
+            oldIndexPath = $0
+        }
+    }
+
     @objc private func didPan(toSelectCells panGesture: UIPanGestureRecognizer) {
         guard isEditing else { return }
 
@@ -263,38 +294,13 @@ final class PhotoListViewController: UIViewController {
             guard lastPanIndexPath != currentIndexPath else { return }
 
             if isStartSelectedCell {
+                // 選択済みのセルからPanをスタートした場合は、どのセルを触っても非選択にするようにする
                 deselectItems(at: operationIndexs(between: currentIndexPath, lastPanIndexPath))
             } else {
-                let indexs = operationIndexs(between: currentIndexPath, lastPanIndexPath)
-                guard !indexs.isEmpty else { return }
-                var oldIndexPath = indexs[0] // 初期値は最初に触ったセル
-
-                indexs.forEach {
-                    // 対象IndexPathの状態操作
-                    if isSelectCell(by: $0) {
-                        deselectItems(at: [$0])
-                    } else {
-                        selectItems(at: [$0])
-                    }
-                    // 対象IndexPathの一つ前のIndexPathへの状態操作
-                    let isAwayFromStartCell = isAwayFromStartPanItem(at: $0)
-
-                    switch (isStartSelectedCell, isAwayFromStartCell) {
-                    case (false, true):
-                        selectItems(at: [oldIndexPath])
-                    case (false, false):
-                        deselectItems(at: [oldIndexPath])
-                    case (true, true):
-                        deselectItems(at: [oldIndexPath])
-                    case (true, false):
-                        selectItems(at: [oldIndexPath])
-                    }
-                    // 操作IndexPathを更新
-                    oldIndexPath = $0
-                }
+                handlePanGestureForSelectCell(at: operationIndexs(between: currentIndexPath, lastPanIndexPath))
             }
             // 次の選択移動のために値を更新
-            self.lastPanIndexPath = currentIndexPath
+            lastPanIndexPath = currentIndexPath
         case .ended:
             photoListView.isScrollEnabled = true
             photoListView.isUserInteractionEnabled = true
