@@ -25,6 +25,8 @@ final class PhotoListViewController: UIViewController {
     // Panを開始したセルからどれだけのitem数離れているかを保持
     private var currentCountAwayFromStartPanItem = 0
 
+    private var autoScrollTimer = Timer()
+
     // MARK: Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,7 +36,7 @@ final class PhotoListViewController: UIViewController {
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
         if !editing {
-            deselectCell()
+            deselectAllItems()
         }
         trashButton.isEnabled = editing
         redoButton.isEnabled = !editing
@@ -105,7 +107,8 @@ final class PhotoListViewController: UIViewController {
         })
     }
 
-    private func deselectCell() {
+    // MARK: For Select and Deselect
+    private func deselectAllItems() {
         (0..<assetEntitys.count).forEach { [weak self] in
             let indexPath = IndexPath(item: $0, section: 0)
             self?.photoListView.deselectItem(at: indexPath, animated: false)
@@ -150,13 +153,6 @@ final class PhotoListViewController: UIViewController {
             self.showFinishLabel(actionType: .delete)
             self.setEditing(false, animated: true)
         }
-    }
-
-    private func switchPhotoListIsScrollEnabled(by fingerPosition: CGPoint) {
-        let isScrollEnabled =
-            (photoListView.bounds.size.height * 0.2 > fingerPosition.y) || (photoListView.bounds.size.height * 0.8 < fingerPosition.y)
-        photoListView.isUserInteractionEnabled = isScrollEnabled
-        photoListView.isScrollEnabled = isScrollEnabled
     }
 
     private func showAllItems(action: UIAlertAction) {
@@ -286,8 +282,8 @@ final class PhotoListViewController: UIViewController {
             isStartSelectedCell = isSelectCell(by: currentIndexPath)
             startPanIndexPath = currentIndexPath
         case .changed:
-            // Pan位置によってスクロールの有無の切り替える
-            switchPhotoListIsScrollEnabled(by: panGesture.location(in: view))
+            // Pan位置によってAutoScrollを開始する
+           startAutoScrollIfNeeded(by: panGesture.location(in: view))
 
             // 一度処理したセルならリターン
             guard lastPanIndexPath != currentIndexPath else { return }
@@ -305,10 +301,81 @@ final class PhotoListViewController: UIViewController {
             photoListView.isUserInteractionEnabled = true
             lastPanIndexPath = nil
             startPanIndexPath = nil
+            if isAutoScroll() {
+                stopAutoScroll()
+            }
         default: break
         }
     }
 
+    // MARK: For Auto Scroll
+    private func shouldAutoScrollWithDirection(by fingerPosition: CGPoint) -> (shouldAutoScroll: Bool, isScrollUpper: Bool?) {
+        let shouldScrollUpper = (view.bounds.size.height * 0.8 < fingerPosition.y)
+        let shouldScrollUnder = (view.bounds.size.height * 0.2 > fingerPosition.y)
+        let shouldAutoScroll = shouldScrollUpper || shouldScrollUnder
+
+        guard shouldAutoScroll else {
+            return (false, nil)
+        }
+
+        switch (shouldScrollUpper, shouldScrollUnder) {
+        case (true, false):
+            return (true, true)
+        case (false, true):
+            return (true, false)
+        default:
+            // ありえない想定
+            return (false, nil)
+        }
+    }
+
+    private func isAutoScroll() -> Bool {
+        return autoScrollTimer.isValid
+    }
+
+    private func isScrollNotOverLimit(at isScrollUpper: Bool) -> Bool {
+        if isScrollUpper {
+            let highLimitValue = photoListView.contentSize.height
+            let currentHighValue = photoListView.contentOffset.y + photoListView.bounds.size.height
+            return highLimitValue > currentHighValue
+        } else {
+            let lowLimitValue = CGFloat.zero
+            let currentLowValue = photoListView.contentOffset.y
+            return currentLowValue > lowLimitValue
+        }
+    }
+
+    private func startAutoScrollIfNeeded(by fingerPosition: CGPoint) {
+        let checkFingerPosition = shouldAutoScrollWithDirection(by: fingerPosition)
+
+        switch (isAutoScroll(), checkFingerPosition.shouldAutoScroll) {
+        case (false, true):
+            if let isScrollUpper = checkFingerPosition.isScrollUpper, !autoScrollTimer.isValid {
+                startAutoScroll(isScrollUpper: isScrollUpper, duration: 0.05)
+            }
+        case (true, false):
+            stopAutoScroll()
+        default: break
+        }
+    }
+
+    private func startAutoScroll(isScrollUpper: Bool, duration: TimeInterval) {
+        var offsetY = photoListView.contentOffset.y
+        autoScrollTimer = Timer.scheduledTimer(withTimeInterval: duration, repeats: true, block: { (_) in
+            guard self.isScrollNotOverLimit(at: isScrollUpper) else {
+                self.stopAutoScroll()
+                return
+            }
+            offsetY = isScrollUpper ? offsetY + 20 : offsetY - 20
+            UIView.animate(withDuration: duration * 2, animations: { [weak self] in
+                self?.photoListView.contentOffset.y = offsetY
+            })
+        })
+    }
+
+    private func stopAutoScroll() {
+        autoScrollTimer.invalidate()
+    }
 }
 
 extension PhotoListViewController: UICollectionViewDataSource {

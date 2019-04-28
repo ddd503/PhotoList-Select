@@ -2,4 +2,70 @@
 <Bucket
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PhotoList-Select/Controller/PhotoListViewController.swift"
+            timestampString = "578161445.465112"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "384"
+            endingLineNumber = "384"
+            landmarkName = "stopAutoScroll()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PhotoList-Select/Controller/PhotoListViewController.swift"
+            timestampString = "578161445.465451"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "363"
+            endingLineNumber = "363"
+            landmarkName = "startAutoScroll(isScrollUpper:duration:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "PhotoList_Select.PhotoListViewController.(startAutoScroll in _2FDAB181207AEF923C4E18C5E0740D8A)(isScrollUpper: Swift.Bool, duration: Swift.Double) -&gt; ()"
+                  moduleName = "PhotoList-Select"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/kawaharadai/xcode%20sorcefile/git%E7%AE%A1%E7%90%86/PhotoList-Select/PhotoList-Select/Controller/PhotoListViewController.swift"
+                  timestampString = "578160578.075792"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "363"
+                  endingLineNumber = "363"
+                  offsetFromSymbolStart = "188">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (__C.NSTimer) -&gt; () in PhotoList_Select.PhotoListViewController.(startAutoScroll in _2FDAB181207AEF923C4E18C5E0740D8A)(isScrollUpper: Swift.Bool, duration: Swift.Double) -&gt; ()"
+                  moduleName = "PhotoList-Select"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/kawaharadai/xcode%20sorcefile/git%E7%AE%A1%E7%90%86/PhotoList-Select/PhotoList-Select/Controller/PhotoListViewController.swift"
+                  timestampString = "578160578.07807"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "363"
+                  endingLineNumber = "363"
+                  offsetFromSymbolStart = "164">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>
