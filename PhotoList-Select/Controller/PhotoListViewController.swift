@@ -13,6 +13,7 @@ final class PhotoListViewController: UIViewController {
     @IBOutlet weak private var photoListView: UICollectionView!
     @IBOutlet weak private var trashButton: UIBarButtonItem!
     @IBOutlet weak private var redoButton: UIBarButtonItem!
+    @IBOutlet weak private var toolbar: UIToolbar!
 
     private let coreDataStore = CoreDataStore()
     private var assetEntitys = [AssetEntity]()
@@ -76,7 +77,13 @@ final class PhotoListViewController: UIViewController {
         photoListView.delegate = self
         photoListView.register(PhotoListViewCollectionViewCell.nib(),
                                forCellWithReuseIdentifier: PhotoListViewCollectionViewCell.identifier)
+        photoListView.register(PhotoListFooterView.nib(),
+                               forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
+                               withReuseIdentifier: PhotoListFooterView.identifier)
         photoListView.allowsMultipleSelection = true
+        if let PhotoListViewLayout = photoListView.collectionViewLayout as? PhotoListViewLayout {
+            PhotoListViewLayout.delegate = self
+        }
     }
 
     private func setupNavigationBarButtonItem() {
@@ -105,16 +112,6 @@ final class PhotoListViewController: UIViewController {
                 self?.showAttentionAlert(title: "取得失敗", message: error.localizedDescription)
             }
         })
-    }
-
-    // MARK: For Select and Deselect
-    private func deselectAllItems() {
-        (0..<assetEntitys.count).forEach { [weak self] in
-            let indexPath = IndexPath(item: $0, section: 0)
-            self?.photoListView.deselectItem(at: indexPath, animated: false)
-            self?.selectedItems = [:]
-            self?.lastPanIndexPath = nil
-        }
     }
 
     private func hiddenSelectedItems(action: UIAlertAction) {
@@ -173,6 +170,17 @@ final class PhotoListViewController: UIViewController {
                 print(nserror.localizedDescription)
                 self.showAttentionAlert(title: "失敗", message: "データの復元に失敗しました")
             }
+        }
+    }
+
+    // MARK: For Select and Deselect
+    private func deselectAllItems() {
+        (0..<assetEntitys.count).forEach { [weak self] in
+            guard let self = self else { return }
+            let indexPath = IndexPath(item: $0, section: 0)
+            self.photoListView.deselectItem(at: indexPath, animated: false)
+            self.selectedItems = [:]
+            self.lastPanIndexPath = nil
         }
     }
 
@@ -283,7 +291,7 @@ final class PhotoListViewController: UIViewController {
             startPanIndexPath = currentIndexPath
         case .changed:
             // Pan位置によってAutoScrollを開始する
-           startAutoScrollIfNeeded(by: panGesture.location(in: view))
+            startAutoScrollIfNeeded(by: panGesture.location(in: view))
 
             // 一度処理したセルならリターン
             guard lastPanIndexPath != currentIndexPath else { return }
@@ -376,13 +384,14 @@ final class PhotoListViewController: UIViewController {
     private func stopAutoScroll() {
         autoScrollTimer.invalidate()
     }
+
 }
 
+// MARK: UICollectionViewDataSource
 extension PhotoListViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return assetEntitys.count
     }
-
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoListViewCollectionViewCell.identifier, for: indexPath) as? PhotoListViewCollectionViewCell else {
             fatalError("not found PhotoListViewCollectionViewCell")
@@ -390,8 +399,18 @@ extension PhotoListViewController: UICollectionViewDataSource {
         cell.setImage(asset: PhotoLibraryDataStore.requestAsset(by: assetEntitys[indexPath.item].localIdentifier))
         return cell
     }
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        if kind == UICollectionView.elementKindSectionFooter,
+            let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: PhotoListFooterView.identifier, for: indexPath) as? PhotoListFooterView {
+            footerView.setSpaceViewHeight(toolbar.bounds.size.height)
+            return footerView
+        }
+        return UICollectionReusableView()
+    }
+
 }
 
+// MARK: UICollectionViewDelegate
 extension PhotoListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if isEditing {
@@ -411,5 +430,13 @@ extension PhotoListViewController: UICollectionViewDelegate {
         if let localId = assetEntitys[indexPath.item].localIdentifier {
             selectedItems.removeValue(forKey: localId)
         }
+    }
+}
+
+// MARK: PhotoListViewLayoutDelegate
+
+extension PhotoListViewController: PhotoListViewLayoutDelegate {
+    func collectionView(_ collectionView: UICollectionView, footerViewHeightAt indexPath: IndexPath) -> CGFloat {
+        return toolbar.bounds.size.height + 50
     }
 }

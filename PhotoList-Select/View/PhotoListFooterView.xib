@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionReusableView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="U6b-Vx-4bR" customClass="PhotoListFooterView" customModule="PhotoList_Select" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="395" height="117"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YdZ-eY-ybq">
+                    <rect key="frame" x="0.0" y="0.0" width="395" height="70"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GX3-Bh-Ygv">
+                            <rect key="frame" x="0.0" y="35" width="395" height="0.0"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="GX3-Bh-Ygv" firstAttribute="centerX" secondItem="YdZ-eY-ybq" secondAttribute="centerX" id="VQt-r8-f0B"/>
+                        <constraint firstAttribute="trailing" secondItem="GX3-Bh-Ygv" secondAttribute="trailing" id="YBs-mZ-z4X"/>
+                        <constraint firstItem="GX3-Bh-Ygv" firstAttribute="centerY" secondItem="YdZ-eY-ybq" secondAttribute="centerY" id="gDM-iZ-wF1"/>
+                        <constraint firstItem="GX3-Bh-Ygv" firstAttribute="leading" secondItem="YdZ-eY-ybq" secondAttribute="leading" id="r3X-L5-yPH"/>
+                    </constraints>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hgD-on-ebY">
+                    <rect key="frame" x="0.0" y="70" width="395" height="47"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                </view>
+            </subviews>
+            <constraints>
+                <constraint firstItem="VXr-Tz-HHm" firstAttribute="trailing" secondItem="hgD-on-ebY" secondAttribute="trailing" id="2Ou-H9-pKL"/>
+                <constraint firstItem="hgD-on-ebY" firstAttribute="bottom" secondItem="U6b-Vx-4bR" secondAttribute="bottom" id="9ME-WI-3bQ"/>
+                <constraint firstItem="YdZ-eY-ybq" firstAttribute="height" secondItem="U6b-Vx-4bR" secondAttribute="height" multiplier="0.6" id="IZs-Vx-BaC"/>
+                <constraint firstItem="YdZ-eY-ybq" firstAttribute="top" secondItem="U6b-Vx-4bR" secondAttribute="top" id="L0O-f1-cZI"/>
+                <constraint firstItem="YdZ-eY-ybq" firstAttribute="leading" secondItem="VXr-Tz-HHm" secondAttribute="leading" id="YxT-OE-1G9"/>
+                <constraint firstItem="hgD-on-ebY" firstAttribute="top" secondItem="YdZ-eY-ybq" secondAttribute="bottom" id="cLL-Yf-vxE"/>
+                <constraint firstItem="hgD-on-ebY" firstAttribute="leading" secondItem="VXr-Tz-HHm" secondAttribute="leading" id="kzN-iN-375"/>
+                <constraint firstItem="VXr-Tz-HHm" firstAttribute="trailing" secondItem="YdZ-eY-ybq" secondAttribute="trailing" id="xhG-Xx-CjC"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="VXr-Tz-HHm"/>
+            <connections>
+                <outlet property="countLabel" destination="GX3-Bh-Ygv" id="Qv8-J2-aiW"/>
+                <outlet property="spaceView" destination="hgD-on-ebY" id="n70-Su-fbY"/>
+            </connections>
+            <point key="canvasLocation" x="192.0289855072464" y="126.22767857142857"/>
+        </collectionReusableView>
+    </objects>
+</document>

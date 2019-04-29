@@ -8,9 +8,15 @@
 
 import UIKit
 
-class PhotoListViewCollectionViewLayout: UICollectionViewLayout {
+protocol PhotoListViewLayoutDelegate: class {
+    func collectionView(_ collectionView: UICollectionView, footerViewHeightAt indexPath: IndexPath) -> CGFloat
+}
+
+class PhotoListViewLayout: UICollectionViewLayout {
 
     // MARK: - Propatis
+
+    weak var delegate: PhotoListViewLayoutDelegate?
 
     private var cachedAttributes = [UICollectionViewLayoutAttributes]()
 
@@ -98,9 +104,17 @@ class PhotoListViewCollectionViewLayout: UICollectionViewLayout {
             let indexPath = IndexPath(item: $0, section: 0)
             let cellFrame = CGRect(x: cellXOffsets[currentColumnNumber], y: cellYOffsets[currentColumnNumber], width: cellLength, height: cellLength)
             cellYOffsets[currentColumnNumber] = cellYOffsets[currentColumnNumber] + cellLength
+            print(cellYOffsets[currentColumnNumber])
             currentColumnNumber = currentColumnNumber < (numberOfColumns() - 1) ? currentColumnNumber + 1 : 0
-
             addAttributes(cellFrame: cellFrame, indexPath: indexPath)
         }
+
+        let indexPath = IndexPath(item: 0, section: 0)
+        let footerAttribute = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
+                                                               with: indexPath)
+        let footerViewHeight = delegate?.collectionView(collectionView, footerViewHeightAt: indexPath) ?? .zero
+        footerAttribute.frame = CGRect(x: 0, y: cellYOffsets[0], width: collectionView.bounds.size.width, height: footerViewHeight)
+        cachedAttributes.append(footerAttribute)
+        contentHeight = contentHeight + footerViewHeight
     }
 }

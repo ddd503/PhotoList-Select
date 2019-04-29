@@ -11,6 +11,8 @@
 		45C9BA9D226B4B2000019C91 /* FinishView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C9BA9C226B4B2000019C91 /* FinishView.swift */; };
 		45C9BA9F226B4B2800019C91 /* FinishView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45C9BA9E226B4B2800019C91 /* FinishView.xib */; };
 		45C9BAA12272DA0100019C91 /* Date+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C9BAA02272DA0100019C91 /* Date+String.swift */; };
+		45D12396227615E400A6E16C /* PhotoListFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D12394227615E400A6E16C /* PhotoListFooterView.swift */; };
+		45D12397227615E400A6E16C /* PhotoListFooterView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45D12395227615E400A6E16C /* PhotoListFooterView.xib */; };
 		45FAFB09226180F30034E913 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FAFB08226180F30034E913 /* AppDelegate.swift */; };
 		45FAFB11226180F30034E913 /* PhotoList_Select.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 45FAFB0F226180F30034E913 /* PhotoList_Select.xcdatamodeld */; };
 		45FAFB13226180F40034E913 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 45FAFB12226180F40034E913 /* Assets.xcassets */; };
@@ -19,7 +21,7 @@
 		45FAFB32226181FA0034E913 /* PhotoListViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45FAFB31226181FA0034E913 /* PhotoListViewController.storyboard */; };
 		45FAFB3622618A200034E913 /* PhotoLibraryDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FAFB3522618A200034E913 /* PhotoLibraryDataStore.swift */; };
 		45FAFB3822618A290034E913 /* CoreDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FAFB3722618A290034E913 /* CoreDataStore.swift */; };
-		45FAFB3A22618B190034E913 /* PhotoListViewCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FAFB3922618B190034E913 /* PhotoListViewCollectionViewLayout.swift */; };
+		45FAFB3A22618B190034E913 /* PhotoListViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FAFB3922618B190034E913 /* PhotoListViewLayout.swift */; };
 		45FAFB3D22618C1A0034E913 /* PhotoListViewCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FAFB3B22618C1A0034E913 /* PhotoListViewCollectionViewCell.swift */; };
 		45FAFB3E22618C1A0034E913 /* PhotoListViewCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45FAFB3C22618C1A0034E913 /* PhotoListViewCollectionViewCell.xib */; };
 		45FAFB41226190D10034E913 /* UIViewController+Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FAFB40226190D10034E913 /* UIViewController+Alert.swift */; };
@@ -30,6 +32,8 @@
 		45C9BA9C226B4B2000019C91 /* FinishView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishView.swift; sourceTree = "<group>"; };
 		45C9BA9E226B4B2800019C91 /* FinishView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FinishView.xib; sourceTree = "<group>"; };
 		45C9BAA02272DA0100019C91 /* Date+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+String.swift"; sourceTree = "<group>"; };
+		45D12394227615E400A6E16C /* PhotoListFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoListFooterView.swift; sourceTree = "<group>"; };
+		45D12395227615E400A6E16C /* PhotoListFooterView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhotoListFooterView.xib; sourceTree = "<group>"; };
 		45FAFB05226180F30034E913 /* PhotoList-Select.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PhotoList-Select.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		45FAFB08226180F30034E913 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		45FAFB10226180F30034E913 /* PhotoList_Select.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = PhotoList_Select.xcdatamodel; sourceTree = "<group>"; };
@@ -40,7 +44,7 @@
 		45FAFB31226181FA0034E913 /* PhotoListViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = PhotoListViewController.storyboard; sourceTree = "<group>"; };
 		45FAFB3522618A200034E913 /* PhotoLibraryDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryDataStore.swift; sourceTree = "<group>"; };
 		45FAFB3722618A290034E913 /* CoreDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStore.swift; sourceTree = "<group>"; };
-		45FAFB3922618B190034E913 /* PhotoListViewCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoListViewCollectionViewLayout.swift; sourceTree = "<group>"; };
+		45FAFB3922618B190034E913 /* PhotoListViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoListViewLayout.swift; sourceTree = "<group>"; };
 		45FAFB3B22618C1A0034E913 /* PhotoListViewCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoListViewCollectionViewCell.swift; sourceTree = "<group>"; };
 		45FAFB3C22618C1A0034E913 /* PhotoListViewCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhotoListViewCollectionViewCell.xib; sourceTree = "<group>"; };
 		45FAFB40226190D10034E913 /* UIViewController+Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Alert.swift"; sourceTree = "<group>"; };
@@ -109,11 +113,13 @@
 		45FAFB2D226181780034E913 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				45FAFB3922618B190034E913 /* PhotoListViewCollectionViewLayout.swift */,
+				45FAFB3922618B190034E913 /* PhotoListViewLayout.swift */,
 				45FAFB3B22618C1A0034E913 /* PhotoListViewCollectionViewCell.swift */,
 				45FAFB3C22618C1A0034E913 /* PhotoListViewCollectionViewCell.xib */,
 				45C9BA9C226B4B2000019C91 /* FinishView.swift */,
 				45C9BA9E226B4B2800019C91 /* FinishView.xib */,
+				45D12394227615E400A6E16C /* PhotoListFooterView.swift */,
+				45D12395227615E400A6E16C /* PhotoListFooterView.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -215,6 +221,7 @@
 				45FAFB3E22618C1A0034E913 /* PhotoListViewCollectionViewCell.xib in Resources */,
 				45FAFB16226180F40034E913 /* LaunchScreen.storyboard in Resources */,
 				45FAFB13226180F40034E913 /* Assets.xcassets in Resources */,
+				45D12397227615E400A6E16C /* PhotoListFooterView.xib in Resources */,
 				45FAFB32226181FA0034E913 /* PhotoListViewController.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -230,9 +237,10 @@
 				45C9BA9D226B4B2000019C91 /* FinishView.swift in Sources */,
 				45FAFB3D22618C1A0034E913 /* PhotoListViewCollectionViewCell.swift in Sources */,
 				45FAFB11226180F30034E913 /* PhotoList_Select.xcdatamodeld in Sources */,
+				45D12396227615E400A6E16C /* PhotoListFooterView.swift in Sources */,
 				45FAFB30226181F20034E913 /* PhotoListViewController.swift in Sources */,
 				45FAFB09226180F30034E913 /* AppDelegate.swift in Sources */,
-				45FAFB3A22618B190034E913 /* PhotoListViewCollectionViewLayout.swift in Sources */,
+				45FAFB3A22618B190034E913 /* PhotoListViewLayout.swift in Sources */,
 				45C9BAA12272DA0100019C91 /* Date+String.swift in Sources */,
 				45C9BA9B226B235000019C91 /* DetailPhotoViewController.swift in Sources */,
 				45FAFB3822618A290034E913 /* CoreDataStore.swift in Sources */,
