@@ -141,6 +141,7 @@ final class PhotoListViewController: UIViewController {
             }
         }
 
+        // 表示ファイル数の更新
         updateFileCount()
 
         // 消す際に選択状態を戻す
@@ -180,7 +181,8 @@ final class PhotoListViewController: UIViewController {
     }
 
     private func updateFileCount() {
-        if let footerView = photoListView.supplementaryView(forElementKind: UICollectionView.elementKindSectionFooter, at: IndexPath(item: 0, section: 0)) as? PhotoListFooterView {
+        if let footerView = photoListView.supplementaryView(forElementKind: UICollectionView.elementKindSectionFooter,
+                                                            at: IndexPath(item: 0, section: 0)) as? PhotoListFooterView {
             footerView.setCount(assetEntitys.count)
         }
     }
@@ -293,10 +295,7 @@ final class PhotoListViewController: UIViewController {
     @objc private func didPan(toSelectCells panGesture: UIPanGestureRecognizer) {
         guard isEditing else { return }
 
-        let location = panGesture.location(in: photoListView)
-        print(panGesture.translation(in: view))
-
-        guard let currentIndexPath = photoListView.indexPathForItem(at: location) else {
+        guard let currentIndexPath = photoListView.indexPathForItem(at: panGesture.location(in: photoListView)) else {
             print("ジェスチャー開始時のタッチ位置状態が取れません")
             return
         }
@@ -423,7 +422,6 @@ extension PhotoListViewController: UICollectionViewDataSource {
         }
         return UICollectionReusableView()
     }
-
 }
 
 // MARK: UICollectionViewDelegate
