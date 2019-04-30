@@ -26,6 +26,7 @@ final class PhotoListViewController: UIViewController {
     // Panを開始したセルからどれだけのitem数離れているかを保持
     private var currentCountAwayFromStartPanItem = 0
     private var autoScrollTimer = Timer()
+    private let scrollDistanceOnece: CGFloat = 1
 
     // MARK: Life Cycle
     override func viewDidLoad() {
@@ -71,6 +72,7 @@ final class PhotoListViewController: UIViewController {
         }
     }
 
+    var photoListViewContentOffsetObserver: NSKeyValueObservation?
     private func setupPhotoListView() {
         photoListView.dataSource = self
         photoListView.delegate = self
@@ -186,6 +188,18 @@ final class PhotoListViewController: UIViewController {
         }
     }
 
+    private func updatePhotoListViewStatus(by state: UIGestureRecognizer.State) {
+        switch state {
+        case .began:
+            photoListView.isUserInteractionEnabled = false
+            photoListView.isScrollEnabled = false
+        case .ended:
+            photoListView.isUserInteractionEnabled = true
+            photoListView.isScrollEnabled = true
+        default: break
+        }
+    }
+
     // MARK: For Select and Deselect
     private func deselectAllItems() {
         (0..<assetEntitys.count).forEach { [weak self] in
@@ -216,24 +230,30 @@ final class PhotoListViewController: UIViewController {
     }
 
     private func selectItems(at indexPaths: [IndexPath]) {
-        indexPaths.forEach {
-            guard let localId = assetEntitys[$0.item].localIdentifier else {
-                print("not found localId")
-                return
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            indexPaths.forEach {
+                guard let localId = self.assetEntitys[$0.item].localIdentifier else {
+                    print("not found localId")
+                    return
+                }
+                self.selectedItems[localId] = $0
+                self.photoListView.selectItem(at: $0, animated: false, scrollPosition: .centeredHorizontally)
             }
-            selectedItems[localId] = $0
-            photoListView.selectItem(at: $0, animated: false, scrollPosition: .centeredHorizontally)
         }
     }
 
     private func deselectItems(at indexPaths: [IndexPath]) {
-        indexPaths.forEach {
-            guard let localId = assetEntitys[$0.item].localIdentifier else {
-                print("not found localId")
-                return
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            indexPaths.forEach {
+                guard let localId = self.assetEntitys[$0.item].localIdentifier else {
+                    print("not found localId")
+                    return
+                }
+                self.selectedItems.removeValue(forKey: localId)
+                self.photoListView.deselectItem(at: $0, animated: false)
             }
-            selectedItems.removeValue(forKey: localId)
-            photoListView.deselectItem(at: $0, animated: false)
         }
     }
 
@@ -255,7 +275,7 @@ final class PhotoListViewController: UIViewController {
         }
     }
 
-    private func handlePanGestureForSelectCell(at indexs: [IndexPath]) {
+    private func handleGestureForSelectCell(at indexs: [IndexPath]) {
         guard !indexs.isEmpty else { return }
         var oldIndexPath = indexs[0] // 初期値は最初に触ったセル
 
@@ -294,18 +314,22 @@ final class PhotoListViewController: UIViewController {
     @objc private func didPan(toSelectCells panGesture: UIPanGestureRecognizer) {
         guard isEditing else { return }
 
-        guard let currentIndexPath = photoListView.indexPathForItem(at: panGesture.location(in: photoListView)) else {
-            print("ジェスチャー開始時のタッチ位置状態が取れません")
-            return
-        }
+        let location = panGesture.location(in: photoListView)
+        updatePhotoListViewStatus(by: panGesture.state)
 
         switch panGesture.state {
         case .began:
-            photoListView.isUserInteractionEnabled = false
-            photoListView.isScrollEnabled = false
+            guard let currentIndexPath = photoListView.indexPathForItem(at: location) else {
+                print("ジェスチャーの状態が取れません：began")
+                return
+            }
             isStartSelectedCell = isSelectCell(by: currentIndexPath)
             startPanIndexPath = currentIndexPath
         case .changed:
+            guard let currentIndexPath = photoListView.indexPathForItem(at: location) else {
+                print("ジェスチャーの状態が取れません：changed")
+                return
+            }
             // Panの位置と方向によってAutoScrollの開始・停止を行う
             let fingerPosition = panGesture.location(in: view)
             let fingerTransition = panGesture.translation(in: view)
@@ -315,13 +339,11 @@ final class PhotoListViewController: UIViewController {
             // 一度処理したセルならリターン
             guard lastPanIndexPath != currentIndexPath else { return }
 
-            handlePanGestureForSelectCell(at: operationIndexs(between: currentIndexPath, lastPanIndexPath))
+            handleGestureForSelectCell(at: operationIndexs(between: currentIndexPath, lastPanIndexPath))
 
             // 次の選択移動のために値を更新
             lastPanIndexPath = currentIndexPath
         case .ended:
-            photoListView.isScrollEnabled = true
-            photoListView.isUserInteractionEnabled = true
             lastPanIndexPath = nil
             startPanIndexPath = nil
             stopAutoScroll()
@@ -331,8 +353,8 @@ final class PhotoListViewController: UIViewController {
 
     // MARK: For Auto Scroll
     private func shouldAutoScrollWithDirection(at fingerPosition: CGPoint, at fingerTransition: CGPoint) -> (shouldAutoScroll: Bool, isScrollUpper: Bool?) {
-        let shouldScrollUpper = (view.bounds.size.height * 0.8 < fingerPosition.y) && (30 < fingerTransition.y)
-        let shouldScrollUnder = (view.bounds.size.height * 0.2 > fingerPosition.y) && (-30 > fingerTransition.y)
+        let shouldScrollUpper = (view.bounds.size.height * 0.85 < fingerPosition.y) && (30 < fingerTransition.y)
+        let shouldScrollUnder = (view.bounds.size.height * 0.15 > fingerPosition.y) && (-30 > fingerTransition.y)
         let shouldAutoScroll = shouldScrollUpper || shouldScrollUnder
 
         guard shouldAutoScroll else {
@@ -354,16 +376,21 @@ final class PhotoListViewController: UIViewController {
         return autoScrollTimer.isValid
     }
 
-    private func isScrollNotOverLimit(at isScrollUpper: Bool) -> Bool {
+    private func updatePhotoListViewContentOffSetY(currentOffsetY: CGFloat, isScrollUpper: Bool) -> CGFloat {
+        var newValue: CGFloat
         if isScrollUpper {
             let highLimitValue = photoListView.contentSize.height
-            let currentHighValue = photoListView.contentOffset.y + photoListView.bounds.size.height
-            return highLimitValue > currentHighValue
+            let currentValue = currentOffsetY + photoListView.bounds.size.height
+            newValue = (currentValue > highLimitValue) ? highLimitValue - photoListView.bounds.size.height :
+                (currentValue + scrollDistanceOnece > highLimitValue) ? highLimitValue - photoListView.bounds.size.height :
+                currentOffsetY + scrollDistanceOnece
         } else {
             let lowLimitValue = CGFloat.zero
-            let currentLowValue = photoListView.contentOffset.y
-            return currentLowValue > lowLimitValue
+            let currentValue = currentOffsetY
+            newValue = (lowLimitValue > currentValue) ? lowLimitValue :
+                (lowLimitValue > currentValue - scrollDistanceOnece) ? lowLimitValue : currentOffsetY - scrollDistanceOnece
         }
+        return newValue
     }
 
     private func startAutoScrollIfNeeded(at fingerPosition: CGPoint, at fingerTransition: CGPoint) {
@@ -372,21 +399,22 @@ final class PhotoListViewController: UIViewController {
         let checkResult = shouldAutoScrollWithDirection(at: fingerPosition,
                                                         at: fingerTransition)
         if checkResult.shouldAutoScroll, let isScrollUpper = checkResult.isScrollUpper {
-            startAutoScroll(isScrollUpper: isScrollUpper, duration: 0.05)
+            startAutoScroll(isScrollUpper: isScrollUpper, duration: 0.003)
         }
     }
 
     private func startAutoScroll(isScrollUpper: Bool, duration: TimeInterval) {
-        var offsetY = photoListView.contentOffset.y
+        var currentOffsetY = photoListView.contentOffset.y
         autoScrollTimer = Timer.scheduledTimer(withTimeInterval: duration, repeats: true, block: { [weak self] (_) in
             guard let self = self else { return }
-            guard self.isScrollNotOverLimit(at: isScrollUpper) else {
+            let newOffsetY = self.updatePhotoListViewContentOffSetY(currentOffsetY: currentOffsetY, isScrollUpper: isScrollUpper)
+            guard currentOffsetY != newOffsetY else {
                 self.stopAutoScroll()
                 return
             }
-            offsetY = isScrollUpper ? offsetY + 20 : offsetY - 20
+            currentOffsetY = newOffsetY
             UIView.animate(withDuration: duration * 2, animations: {
-                self.photoListView.contentOffset.y = offsetY
+                self.photoListView.contentOffset.y = newOffsetY
             })
         })
     }
@@ -454,7 +482,7 @@ extension PhotoListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         // AutoScroll中は表示前に選択処理をしてしまう
         if isAutoScroll() {
-            handlePanGestureForSelectCell(at: operationIndexs(between: indexPath, lastPanIndexPath))
+            handleGestureForSelectCell(at: operationIndexs(between: indexPath, lastPanIndexPath))
             lastPanIndexPath = indexPath
         }
     }
@@ -463,6 +491,6 @@ extension PhotoListViewController: UICollectionViewDelegate {
 // MARK: PhotoListViewLayoutDelegate
 extension PhotoListViewController: PhotoListViewLayoutDelegate {
     func collectionView(_ collectionView: UICollectionView, footerViewHeightAt indexPath: IndexPath) -> CGFloat {
-        return assetEntitys.isEmpty ? .zero : toolbar.bounds.size.height + 50
+        return assetEntitys.isEmpty ? .zero : toolbar.frame.size.height + 70
     }
 }
