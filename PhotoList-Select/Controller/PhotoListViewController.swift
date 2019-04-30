@@ -104,12 +104,14 @@ final class PhotoListViewController: UIViewController {
     // MARK: Private
     private func requestAssetEntitys() {
         self.coreDataStore.fetchIsNotHiddenAssetEntitys(completion: { [weak self] (result) in
+            guard let self = self else { return }
             switch result {
             case .success(let assetEntitys):
-                self?.assetEntitys = assetEntitys
-                self?.photoListView.reloadData()
+                self.assetEntitys = assetEntitys
+                self.updateFileCount()
+                self.photoListView.reloadData()
             case .failure(let error):
-                self?.showAttentionAlert(title: "取得失敗", message: error.localizedDescription)
+                self.showAttentionAlert(title: "取得失敗", message: error.localizedDescription)
             }
         })
     }
@@ -139,6 +141,8 @@ final class PhotoListViewController: UIViewController {
             }
         }
 
+        updateFileCount()
+
         // 消す際に選択状態を戻す
         selectedItems.forEach { photoListView.deselectItem(at: $0.value, animated: false) }
 
@@ -147,8 +151,10 @@ final class PhotoListViewController: UIViewController {
         }) { [weak self] (_) in
             guard let self = self else { return }
             self.selectedItems = [:]
-            self.showFinishLabel(actionType: .delete)
             self.setEditing(false, animated: true)
+            DispatchQueue.main.async {
+                self.showFinishLabel(actionType: .delete)
+            }
         }
     }
 
@@ -170,6 +176,12 @@ final class PhotoListViewController: UIViewController {
                 print(nserror.localizedDescription)
                 self.showAttentionAlert(title: "失敗", message: "データの復元に失敗しました")
             }
+        }
+    }
+
+    private func updateFileCount() {
+        if let footerView = photoListView.supplementaryView(forElementKind: UICollectionView.elementKindSectionFooter, at: IndexPath(item: 0, section: 0)) as? PhotoListFooterView {
+            footerView.setCount(assetEntitys.count)
         }
     }
 
@@ -402,6 +414,7 @@ extension PhotoListViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionView.elementKindSectionFooter,
             let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: PhotoListFooterView.identifier, for: indexPath) as? PhotoListFooterView {
+            footerView.setCount(assetEntitys.count)
             footerView.setSpaceViewHeight(toolbar.bounds.size.height)
             return footerView
         }
@@ -437,6 +450,6 @@ extension PhotoListViewController: UICollectionViewDelegate {
 
 extension PhotoListViewController: PhotoListViewLayoutDelegate {
     func collectionView(_ collectionView: UICollectionView, footerViewHeightAt indexPath: IndexPath) -> CGFloat {
-        return toolbar.bounds.size.height + 50
+        return assetEntitys.isEmpty ? .zero : toolbar.bounds.size.height + 50
     }
 }

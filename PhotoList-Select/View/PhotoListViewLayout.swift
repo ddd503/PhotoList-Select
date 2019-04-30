@@ -104,7 +104,6 @@ class PhotoListViewLayout: UICollectionViewLayout {
             let indexPath = IndexPath(item: $0, section: 0)
             let cellFrame = CGRect(x: cellXOffsets[currentColumnNumber], y: cellYOffsets[currentColumnNumber], width: cellLength, height: cellLength)
             cellYOffsets[currentColumnNumber] = cellYOffsets[currentColumnNumber] + cellLength
-            print(cellYOffsets[currentColumnNumber])
             currentColumnNumber = currentColumnNumber < (numberOfColumns() - 1) ? currentColumnNumber + 1 : 0
             addAttributes(cellFrame: cellFrame, indexPath: indexPath)
         }
