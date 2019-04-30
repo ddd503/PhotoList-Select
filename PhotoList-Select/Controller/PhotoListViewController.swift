@@ -258,30 +258,35 @@ final class PhotoListViewController: UIViewController {
         guard !indexs.isEmpty else { return }
         var oldIndexPath = indexs[0] // 初期値は最初に触ったセル
 
-        indexs.forEach {
-            // 対象IndexPathの状態操作（deselectが必要なパターンはisStartSelectedCellの判定でtrueに入る）
-            if !isSelectCell(by: $0) {
-                selectItems(at: [$0])
+        if isStartSelectedCell {
+            // 選択済みのセルからPanをスタートした場合は、どのセルを触っても非選択にするようにする
+            deselectItems(at: indexs)
+        } else {
+            indexs.forEach {
+                // 対象IndexPathの状態操作（deselectが必要なパターンはisStartSelectedCellの判定でtrueに入る）
+                if !isSelectCell(by: $0) {
+                    selectItems(at: [$0])
+                }
+
+                // 操作対象のIndexPathの配列の要素数が1の場合は以降の処理は必要ない（してはいけない）
+                guard indexs.count > 1 else { return }
+
+                // 対象IndexPathの一つ前のIndexPathへの状態操作
+                let isAwayFromStartCell = isAwayFromStartPanItem(at: $0)
+
+                switch (isStartSelectedCell, isAwayFromStartCell) {
+                case (false, true):
+                    selectItems(at: [oldIndexPath])
+                case (false, false):
+                    deselectItems(at: [oldIndexPath])
+                case (true, true):
+                    deselectItems(at: [oldIndexPath])
+                case (true, false):
+                    selectItems(at: [oldIndexPath])
+                }
+                // 操作IndexPathを更新
+                oldIndexPath = $0
             }
-
-            // 操作対象のIndexPathの配列の要素数が1の場合は以降の処理は必要ない（してはいけない）
-            guard indexs.count > 1 else { return }
-
-            // 対象IndexPathの一つ前のIndexPathへの状態操作
-            let isAwayFromStartCell = isAwayFromStartPanItem(at: $0)
-
-            switch (isStartSelectedCell, isAwayFromStartCell) {
-            case (false, true):
-                selectItems(at: [oldIndexPath])
-            case (false, false):
-                deselectItems(at: [oldIndexPath])
-            case (true, true):
-                deselectItems(at: [oldIndexPath])
-            case (true, false):
-                selectItems(at: [oldIndexPath])
-            }
-            // 操作IndexPathを更新
-            oldIndexPath = $0
         }
     }
 
@@ -308,12 +313,8 @@ final class PhotoListViewController: UIViewController {
             // 一度処理したセルならリターン
             guard lastPanIndexPath != currentIndexPath else { return }
 
-            if isStartSelectedCell {
-                // 選択済みのセルからPanをスタートした場合は、どのセルを触っても非選択にするようにする
-                deselectItems(at: operationIndexs(between: currentIndexPath, lastPanIndexPath))
-            } else {
-                handlePanGestureForSelectCell(at: operationIndexs(between: currentIndexPath, lastPanIndexPath))
-            }
+            handlePanGestureForSelectCell(at: operationIndexs(between: currentIndexPath, lastPanIndexPath))
+
             // 次の選択移動のために値を更新
             lastPanIndexPath = currentIndexPath
         case .ended:
@@ -321,9 +322,7 @@ final class PhotoListViewController: UIViewController {
             photoListView.isUserInteractionEnabled = true
             lastPanIndexPath = nil
             startPanIndexPath = nil
-            if isAutoScroll() {
-                stopAutoScroll()
-            }
+            stopAutoScrollIfNeeded(at: isAutoScroll())
         default: break
         }
     }
@@ -374,27 +373,30 @@ final class PhotoListViewController: UIViewController {
                 startAutoScroll(isScrollUpper: isScrollUpper, duration: 0.05)
             }
         case (true, false):
-            stopAutoScroll()
+            stopAutoScrollIfNeeded(at: isAutoScroll())
         default: break
         }
     }
 
     private func startAutoScroll(isScrollUpper: Bool, duration: TimeInterval) {
         var offsetY = photoListView.contentOffset.y
-        autoScrollTimer = Timer.scheduledTimer(withTimeInterval: duration, repeats: true, block: { (_) in
+        autoScrollTimer = Timer.scheduledTimer(withTimeInterval: duration, repeats: true, block: { [weak self] (_) in
+            guard let self = self else { return }
             guard self.isScrollNotOverLimit(at: isScrollUpper) else {
-                self.stopAutoScroll()
+                self.stopAutoScrollIfNeeded(at: self.isAutoScroll())
                 return
             }
             offsetY = isScrollUpper ? offsetY + 20 : offsetY - 20
-            UIView.animate(withDuration: duration * 2, animations: { [weak self] in
-                self?.photoListView.contentOffset.y = offsetY
+            UIView.animate(withDuration: duration * 2, animations: {
+                self.photoListView.contentOffset.y = offsetY
             })
         })
     }
 
-    private func stopAutoScroll() {
-        autoScrollTimer.invalidate()
+    private func stopAutoScrollIfNeeded(at isAutoScroll: Bool) {
+        if isAutoScroll {
+            autoScrollTimer.invalidate()
+        }
     }
 
 }
