@@ -294,6 +294,7 @@ final class PhotoListViewController: UIViewController {
         guard isEditing else { return }
 
         let location = panGesture.location(in: photoListView)
+        print(panGesture.translation(in: view))
 
         guard let currentIndexPath = photoListView.indexPathForItem(at: location) else {
             print("ジェスチャー開始時のタッチ位置状態が取れません")
@@ -307,8 +308,8 @@ final class PhotoListViewController: UIViewController {
             isStartSelectedCell = isSelectCell(by: currentIndexPath)
             startPanIndexPath = currentIndexPath
         case .changed:
-            // Pan位置によってAutoScrollを開始する
-            startAutoScrollIfNeeded(by: panGesture.location(in: view))
+            // Panの位置と方向によってAutoScrollを開始する
+            startAutoScrollIfNeeded(at: panGesture.location(in: view), at: panGesture.translation(in: view))
 
             // 一度処理したセルならリターン
             guard lastPanIndexPath != currentIndexPath else { return }
@@ -328,9 +329,9 @@ final class PhotoListViewController: UIViewController {
     }
 
     // MARK: For Auto Scroll
-    private func shouldAutoScrollWithDirection(by fingerPosition: CGPoint) -> (shouldAutoScroll: Bool, isScrollUpper: Bool?) {
-        let shouldScrollUpper = (view.bounds.size.height * 0.8 < fingerPosition.y)
-        let shouldScrollUnder = (view.bounds.size.height * 0.2 > fingerPosition.y)
+    private func shouldAutoScrollWithDirection(at fingerPosition: CGPoint, at fingerTransition: CGPoint) -> (shouldAutoScroll: Bool, isScrollUpper: Bool?) {
+        let shouldScrollUpper = (view.bounds.size.height * 0.8 < fingerPosition.y) && (20 < fingerTransition.y)
+        let shouldScrollUnder = (view.bounds.size.height * 0.2 > fingerPosition.y) && (-20 > fingerTransition.y)
         let shouldAutoScroll = shouldScrollUpper || shouldScrollUnder
 
         guard shouldAutoScroll else {
@@ -364,12 +365,12 @@ final class PhotoListViewController: UIViewController {
         }
     }
 
-    private func startAutoScrollIfNeeded(by fingerPosition: CGPoint) {
-        let checkFingerPosition = shouldAutoScrollWithDirection(by: fingerPosition)
+    private func startAutoScrollIfNeeded(at fingerPosition: CGPoint, at fingerTransition: CGPoint) {
+        let checkResult = shouldAutoScrollWithDirection(at: fingerPosition, at: fingerTransition)
 
-        switch (isAutoScroll(), checkFingerPosition.shouldAutoScroll) {
+        switch (isAutoScroll(), checkResult.shouldAutoScroll) {
         case (false, true):
-            if let isScrollUpper = checkFingerPosition.isScrollUpper, !autoScrollTimer.isValid {
+            if let isScrollUpper = checkResult.isScrollUpper, !autoScrollTimer.isValid {
                 startAutoScroll(isScrollUpper: isScrollUpper, duration: 0.05)
             }
         case (true, false):
@@ -449,7 +450,6 @@ extension PhotoListViewController: UICollectionViewDelegate {
 }
 
 // MARK: PhotoListViewLayoutDelegate
-
 extension PhotoListViewController: PhotoListViewLayoutDelegate {
     func collectionView(_ collectionView: UICollectionView, footerViewHeightAt indexPath: IndexPath) -> CGFloat {
         return assetEntitys.isEmpty ? .zero : toolbar.bounds.size.height + 50
