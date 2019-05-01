@@ -13,13 +13,9 @@ protocol PhotoListViewLayoutDelegate: class {
 }
 
 class PhotoListViewLayout: UICollectionViewLayout {
-
     // MARK: - Propatis
-
     weak var delegate: PhotoListViewLayoutDelegate?
-
     private var cachedAttributes = [UICollectionViewLayoutAttributes]()
-
     // レイアウトの総Height
     private var contentHeight: CGFloat = 0
     // レイアウトの総Width
@@ -28,18 +24,33 @@ class PhotoListViewLayout: UICollectionViewLayout {
         let insets = collectionView.contentInset
         return collectionView.bounds.width - (insets.left + insets.right)
     }
+    // 直近のy軸のoffsetを保持
+    private var lastContentOffsetY = CGFloat.zero
+    // falseならレイアウト更新後ScrollToTopとなる
+    var isKeepCurrentOffset = false
+
+    private var footerViewHeight = CGFloat.zero
 
     // MARK: - Life Cycle
-
     override func prepare() {
+        if let collectionView = collectionView {
+            lastContentOffsetY = collectionView.contentOffset.y
+        }
         resetAttributes()
         setupAttributes()
         setupOffset()
     }
 
+    // prepareが終わった後に呼ばれる
     override var collectionViewContentSize: CGSize {
-        // prepareが終わった後に呼ばれるので、計算したcontentHeightを返す
-        return CGSize(width: contentWidth, height: contentHeight)
+        let newContentSize = CGSize(width: contentWidth, height: contentHeight)
+        // セルの増減があった時にcurrentのoffsetを保つ場合は改めてoffsetをセットし直す（このタイミングでは新しいレイアウトが決まっている）
+        if let collectionView = collectionView {
+            setContentOffsetIfNeeded(shouldSetContentOffset: isKeepCurrentOffset &&
+                (newContentSize.height > (collectionView.frame.size.height - footerViewHeight)),
+                                     collectionView: collectionView)
+        }
+        return newContentSize
     }
 
     // 生成したUICollectionViewLayoutAttributesを返す（要素数→セルの数）
@@ -53,8 +64,7 @@ class PhotoListViewLayout: UICollectionViewLayout {
         return cachedAttributes[indexPath.item]
     }
 
-    // MARK: - Setup Value
-
+    // MARK: - Private
     private func setupAttributes() {
         guard cachedAttributes.isEmpty, let collectionView = collectionView else { return }
         let cellLength = contentWidth / CGFloat(numberOfColumns())
@@ -85,7 +95,7 @@ class PhotoListViewLayout: UICollectionViewLayout {
         return 1
     }
 
-    // セルの配置を決定後に施す共通処理
+    // 生成したセルの配置情報を配列に追加
     private func addAttributes(cellFrame: CGRect, indexPath: IndexPath) {
         // セルの内側にスペースを入れる
         let itemFrame = cellFrame.insetBy(dx: cellPadding(), dy: cellPadding())
@@ -97,6 +107,7 @@ class PhotoListViewLayout: UICollectionViewLayout {
         contentHeight = max(contentHeight, cellFrame.maxY)
     }
 
+    // グリッド形式のレイアウト生成
     private func gridAttributes(collectionView: UICollectionView, cellLength: CGFloat, cellXOffsets: [CGFloat]) {
         var cellYOffsets = [CGFloat](repeating: 0, count: numberOfColumns())
         var currentColumnNumber = 0
@@ -111,9 +122,17 @@ class PhotoListViewLayout: UICollectionViewLayout {
         let indexPath = IndexPath(item: 0, section: 0)
         let footerAttribute = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
                                                                with: indexPath)
-        let footerViewHeight = delegate?.collectionView(collectionView, footerViewHeightAt: indexPath) ?? .zero
+        footerViewHeight = delegate?.collectionView(collectionView, footerViewHeightAt: indexPath) ?? .zero
         footerAttribute.frame = CGRect(x: 0, y: cellYOffsets[0], width: collectionView.bounds.size.width, height: footerViewHeight)
         cachedAttributes.append(footerAttribute)
         contentHeight = contentHeight + footerViewHeight
+    }
+
+    private func setContentOffsetIfNeeded(shouldSetContentOffset: Bool, collectionView: UICollectionView) {
+        if shouldSetContentOffset {
+            let newOffset = CGPoint(x: collectionView.frame.origin.x, y: lastContentOffsetY)
+            collectionView.setContentOffset(newOffset, animated: false)
+            isKeepCurrentOffset = false
+        }
     }
 }

@@ -49,53 +49,47 @@ final class CoreDataStore {
 
     func fetchIsNotHiddenAssetEntitys(completion: @escaping (Result<[AssetEntity], NSError>) -> ()) {
         let context = persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<AssetEntity>(entityName: "AssetEntity")
+        // isHiddenがtrueでないもののみ取得（削除していないもの）
+        let predicate = NSPredicate(format: "isHidden != %@", NSNumber(booleanLiteral: true))
+        fetchRequest.predicate = predicate
+        let sortDescriptor = NSSortDescriptor(key: "creationDate", ascending: true)
+        fetchRequest.sortDescriptors = [sortDescriptor]
 
-        context.perform {
-            let fetchRequest = NSFetchRequest<AssetEntity>(entityName: "AssetEntity")
-            // isHiddenがtrueでないもののみ取得（削除していないもの）
-            let predicate = NSPredicate(format: "isHidden != %@", NSNumber(booleanLiteral: true))
-            fetchRequest.predicate = predicate
-            let sortDescriptor = NSSortDescriptor(key: "creationDate", ascending: true)
-            fetchRequest.sortDescriptors = [sortDescriptor]
-
-            let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
-                                                                      managedObjectContext: context,
-                                                                      sectionNameKeyPath: nil,
-                                                                      cacheName: nil)
-            do {
-                try fetchedResultsController.performFetch()
-                completion(.success((fetchedResultsController.fetchedObjects ?? []).compactMap { $0 }))
-            } catch let error as NSError {
-                print("取得失敗: \(error.localizedDescription)")
-                completion(.failure(error))
-            }
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
+                                                                  managedObjectContext: context,
+                                                                  sectionNameKeyPath: nil,
+                                                                  cacheName: nil)
+        do {
+            try fetchedResultsController.performFetch()
+            completion(.success((fetchedResultsController.fetchedObjects ?? []).compactMap { $0 }))
+        } catch let error as NSError {
+            print("取得失敗: \(error.localizedDescription)")
+            completion(.failure(error))
         }
     }
 
     func fetchAllAssetEntity(completion: @escaping (Result<[AssetEntity], NSError>) -> ()) {
         let context = persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<AssetEntity>(entityName: "AssetEntity")
+        let sortDescriptor = NSSortDescriptor(key: "creationDate", ascending: true)
+        fetchRequest.sortDescriptors = [sortDescriptor]
 
-        context.perform {
-            let fetchRequest = NSFetchRequest<AssetEntity>(entityName: "AssetEntity")
-            let sortDescriptor = NSSortDescriptor(key: "creationDate", ascending: true)
-            fetchRequest.sortDescriptors = [sortDescriptor]
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
+                                                                  managedObjectContext: context,
+                                                                  sectionNameKeyPath: nil,
+                                                                  cacheName: nil)
+        do {
+            try fetchedResultsController.performFetch()
+            let fetchedObjects = (fetchedResultsController.fetchedObjects ?? []).compactMap { $0 }
+            completion(.success(fetchedObjects))
 
-            let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
-                                                                      managedObjectContext: context,
-                                                                      sectionNameKeyPath: nil,
-                                                                      cacheName: nil)
-            do {
-                try fetchedResultsController.performFetch()
-                let fetchedObjects = (fetchedResultsController.fetchedObjects ?? []).compactMap { $0 }
-                completion(.success(fetchedObjects))
-
-                DispatchQueue.global(qos: .default).async { [weak self] in
-                    self?.organizeIsHiddenParam(fetchedObjects: fetchedObjects.filter { $0.isHidden == true }, context: context)
-                }
-            } catch let error as NSError {
-                print("取得失敗: \(error.localizedDescription)")
-                completion(.failure(error))
+            DispatchQueue.global(qos: .default).async { [weak self] in
+                self?.organizeIsHiddenParam(fetchedObjects: fetchedObjects.filter { $0.isHidden == true }, context: context)
             }
+        } catch let error as NSError {
+            print("取得失敗: \(error.localizedDescription)")
+            completion(.failure(error))
         }
     }
 
