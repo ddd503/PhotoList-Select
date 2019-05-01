@@ -26,7 +26,7 @@ final class PhotoListViewController: UIViewController {
     // Panを開始したセルからどれだけのitem数離れているかを保持
     private var currentCountAwayFromStartPanItem = 0
     private var autoScrollTimer = Timer()
-    private let scrollDistanceOnece: CGFloat = 0.5
+    private let scrollDistanceOnece: CGFloat = 20
 
     // MARK: Life Cycle
     override func viewDidLoad() {
@@ -72,7 +72,6 @@ final class PhotoListViewController: UIViewController {
         }
     }
 
-    var photoListViewContentOffsetObserver: NSKeyValueObservation?
     private func setupPhotoListView() {
         photoListView.dataSource = self
         photoListView.delegate = self
@@ -399,7 +398,7 @@ final class PhotoListViewController: UIViewController {
         let checkResult = shouldAutoScrollWithDirection(at: fingerPosition,
                                                         at: fingerTransition)
         if checkResult.shouldAutoScroll, let isScrollUpper = checkResult.isScrollUpper {
-            startAutoScroll(isScrollUpper: isScrollUpper, duration: 0.001)
+            startAutoScroll(isScrollUpper: isScrollUpper, duration: 0.03)
         }
     }
 
@@ -414,7 +413,7 @@ final class PhotoListViewController: UIViewController {
             }
             currentOffsetY = newOffsetY
             DispatchQueue.main.async {
-                UIView.animate(withDuration: duration, animations: {
+                UIView.animate(withDuration: duration * 2, animations: {
                     self.photoListView.setContentOffset(CGPoint(x: 0, y: newOffsetY), animated: false)
                 })
             }
