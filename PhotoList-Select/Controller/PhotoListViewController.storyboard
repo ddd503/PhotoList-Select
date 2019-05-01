@@ -19,7 +19,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="JLl-vV-rts">
-                                <rect key="frame" x="0.0" y="88" width="414" height="808"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewLayout key="collectionViewLayout" id="Weh-Xg-ef5" customClass="PhotoListViewLayout" customModule="PhotoList_Select"/>
                                 <cells/>
@@ -43,7 +43,7 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="JLl-vV-rts" firstAttribute="top" secondItem="89o-4l-LgR" secondAttribute="top" id="5MI-zH-NCe"/>
+                            <constraint firstItem="JLl-vV-rts" firstAttribute="top" secondItem="hea-MP-tbS" secondAttribute="top" id="5MI-zH-NCe"/>
                             <constraint firstItem="89o-4l-LgR" firstAttribute="trailing" secondItem="JLl-vV-rts" secondAttribute="trailing" id="7AG-TX-gBm"/>
                             <constraint firstItem="JLl-vV-rts" firstAttribute="leading" secondItem="89o-4l-LgR" secondAttribute="leading" id="L24-Ar-ymZ"/>
                             <constraint firstAttribute="bottom" secondItem="JLl-vV-rts" secondAttribute="bottom" id="hD1-Uf-74U"/>

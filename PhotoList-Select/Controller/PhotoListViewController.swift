@@ -26,7 +26,7 @@ final class PhotoListViewController: UIViewController {
     // Panを開始したセルからどれだけのitem数離れているかを保持
     private var currentCountAwayFromStartPanItem = 0
     private var autoScrollTimer = Timer()
-    private let scrollDistanceOnece: CGFloat = 1
+    private let scrollDistanceOnece: CGFloat = 0.5
 
     // MARK: Life Cycle
     override func viewDidLoad() {
@@ -238,7 +238,7 @@ final class PhotoListViewController: UIViewController {
                     return
                 }
                 self.selectedItems[localId] = $0
-                self.photoListView.selectItem(at: $0, animated: false, scrollPosition: .centeredHorizontally)
+                self.photoListView.selectItem(at: $0, animated: false, scrollPosition: .init())
             }
         }
     }
@@ -399,7 +399,7 @@ final class PhotoListViewController: UIViewController {
         let checkResult = shouldAutoScrollWithDirection(at: fingerPosition,
                                                         at: fingerTransition)
         if checkResult.shouldAutoScroll, let isScrollUpper = checkResult.isScrollUpper {
-            startAutoScroll(isScrollUpper: isScrollUpper, duration: 0.003)
+            startAutoScroll(isScrollUpper: isScrollUpper, duration: 0.001)
         }
     }
 
@@ -413,9 +413,11 @@ final class PhotoListViewController: UIViewController {
                 return
             }
             currentOffsetY = newOffsetY
-            UIView.animate(withDuration: duration * 2, animations: {
-                self.photoListView.contentOffset.y = newOffsetY
-            })
+            DispatchQueue.main.async {
+                UIView.animate(withDuration: duration, animations: {
+                    self.photoListView.setContentOffset(CGPoint(x: 0, y: newOffsetY), animated: false)
+                })
+            }
         })
     }
 
@@ -430,6 +432,7 @@ final class PhotoListViewController: UIViewController {
     }
 
     private func stopAutoScroll() {
+        view.layer.removeAllAnimations()
         autoScrollTimer.invalidate()
     }
 

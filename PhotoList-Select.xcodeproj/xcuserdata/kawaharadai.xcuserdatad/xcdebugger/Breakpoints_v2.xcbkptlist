@@ -9,13 +9,61 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "PhotoList-Select/View/PhotoListViewLayout.swift"
-            timestampString = "578335802.872219"
+            filePath = "PhotoList-Select/Controller/PhotoListViewController.swift"
+            timestampString = "578393566.254251"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "35"
-            endingLineNumber = "35"
-            landmarkName = "prepare()"
+            startingLineNumber = "82"
+            endingLineNumber = "82"
+            landmarkName = "setupPhotoListView()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "PhotoList_Select.PhotoListViewController.anime() -&gt; ()"
+                  moduleName = "PhotoList-Select"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/kawaharadai/xcode%20sorcefile/git%E7%AE%A1%E7%90%86/PhotoList-Select/PhotoList-Select/Controller/PhotoListViewController.swift"
+                  timestampString = "578343827.379603"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "57"
+                  endingLineNumber = "57"
+                  offsetFromSymbolStart = "944">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; () in PhotoList_Select.PhotoListViewController.anime() -&gt; ()"
+                  moduleName = "PhotoList-Select"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/kawaharadai/xcode%20sorcefile/git%E7%AE%A1%E7%90%86/PhotoList-Select/PhotoList-Select/Controller/PhotoListViewController.swift"
+                  timestampString = "578343827.381144"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "58"
+                  endingLineNumber = "58"
+                  offsetFromSymbolStart = "60">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PhotoList-Select/Controller/PhotoListViewController.swift"
+            timestampString = "578393566.254385"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "326"
+            endingLineNumber = "326"
+            landmarkName = "didPan(toSelectCells:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -25,14 +73,14 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "PhotoList-Select/View/PhotoListViewLayout.swift"
-            timestampString = "578335802.872285"
+            filePath = "PhotoList-Select/Controller/PhotoListViewController.swift"
+            timestampString = "578393566.254455"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "42"
-            endingLineNumber = "42"
-            landmarkName = "collectionViewContentSize"
-            landmarkType = "24">
+            startingLineNumber = "329"
+            endingLineNumber = "329"
+            landmarkName = "didPan(toSelectCells:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

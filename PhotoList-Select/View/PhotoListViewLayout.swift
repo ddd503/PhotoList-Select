@@ -33,8 +33,8 @@ class PhotoListViewLayout: UICollectionViewLayout {
 
     override func prepare() {
         resetAttributes()
-        setupCollectionViewInset()
         setupAttributes()
+        setupOffset()
     }
 
     override var collectionViewContentSize: CGSize {
@@ -55,11 +55,6 @@ class PhotoListViewLayout: UICollectionViewLayout {
 
     // MARK: - Setup Value
 
-    private func setupCollectionViewInset() {
-        guard let collectionView = collectionView else { return }
-        collectionView.contentInset = UIEdgeInsets.zero
-    }
-
     private func setupAttributes() {
         guard cachedAttributes.isEmpty, let collectionView = collectionView else { return }
         let cellLength = contentWidth / CGFloat(numberOfColumns())
@@ -67,6 +62,11 @@ class PhotoListViewLayout: UICollectionViewLayout {
             CGFloat($0) * cellLength
         }
         gridAttributes(collectionView: collectionView, cellLength: cellLength, cellXOffsets: cellXOffsets)
+    }
+
+    private func setupOffset() {
+        // ナビバー分を調整
+        collectionView?.contentOffset = CGPoint(x: 0, y: -(collectionView?.adjustedContentInset.top ?? 0))
     }
 
     private func resetAttributes() {
