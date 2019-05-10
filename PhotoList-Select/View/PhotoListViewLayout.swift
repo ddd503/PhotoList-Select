@@ -24,33 +24,18 @@ class PhotoListViewLayout: UICollectionViewLayout {
         let insets = collectionView.contentInset
         return collectionView.bounds.width - (insets.left + insets.right)
     }
-    // 直近のy軸のoffsetを保持
-    private var lastContentOffsetY = CGFloat.zero
-    // falseならレイアウト更新後ScrollToTopとなる
-    var isKeepCurrentOffset = false
 
     private var footerViewHeight = CGFloat.zero
 
     // MARK: - Life Cycle
     override func prepare() {
-        if let collectionView = collectionView {
-            lastContentOffsetY = collectionView.contentOffset.y
-        }
         resetAttributes()
         setupAttributes()
-        setupOffset()
     }
 
     // prepareが終わった後に呼ばれる
     override var collectionViewContentSize: CGSize {
-        let newContentSize = CGSize(width: contentWidth, height: contentHeight)
-        // セルの増減があった時にcurrentのoffsetを保つ場合は改めてoffsetをセットし直す（このタイミングでは新しいレイアウトが決まっている）
-        if let collectionView = collectionView {
-            setContentOffsetIfNeeded(shouldSetContentOffset: isKeepCurrentOffset &&
-                (newContentSize.height > (collectionView.frame.size.height - footerViewHeight)),
-                                     collectionView: collectionView)
-        }
-        return newContentSize
+        return CGSize(width: contentWidth, height: contentHeight)
     }
 
     // 生成したUICollectionViewLayoutAttributesを返す（要素数→セルの数）
@@ -74,15 +59,9 @@ class PhotoListViewLayout: UICollectionViewLayout {
         gridAttributes(collectionView: collectionView, cellLength: cellLength, cellXOffsets: cellXOffsets)
     }
 
-    private func setupOffset() {
-        // ナビバー分を調整
-        collectionView?.contentOffset = CGPoint(x: 0, y: -(collectionView?.adjustedContentInset.top ?? 0))
-    }
-
     private func resetAttributes() {
         cachedAttributes = []
         contentHeight = 0
-        collectionView?.contentOffset.y = 0
     }
 
     // 列の数
@@ -126,13 +105,5 @@ class PhotoListViewLayout: UICollectionViewLayout {
         footerAttribute.frame = CGRect(x: 0, y: cellYOffsets[0], width: collectionView.bounds.size.width, height: footerViewHeight)
         cachedAttributes.append(footerAttribute)
         contentHeight = contentHeight + footerViewHeight
-    }
-
-    private func setContentOffsetIfNeeded(shouldSetContentOffset: Bool, collectionView: UICollectionView) {
-        if shouldSetContentOffset {
-            let newOffset = CGPoint(x: collectionView.frame.origin.x, y: lastContentOffsetY)
-            collectionView.setContentOffset(newOffset, animated: false)
-            isKeepCurrentOffset = false
-        }
     }
 }

@@ -146,11 +146,6 @@ final class PhotoListViewController: UIViewController {
 
         // 消す際に選択状態を戻す
         selectedItems.forEach { photoListView.deselectItem(at: $0.value, animated: false) }
-
-        // deleteItemsで削除後にContentOffsetが0になってしまう事象への対応
-        if let layout = photoListView.collectionViewLayout as? PhotoListViewLayout {
-            layout.isKeepCurrentOffset = true
-        }
         
         photoListView.performBatchUpdates({
             photoListView.deleteItems(at: selectedItems.map { $0.value })
